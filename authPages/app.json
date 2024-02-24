@@ -1,0 +1,9 @@
+{
+  "expo": {
+    "name": "authPages",
+    "slug": "authPages",
+    "android": {
+      "package": "com.harsh1600.authPages"
+    }
+  }
+}
