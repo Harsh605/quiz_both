@@ -110,52 +110,9 @@ const MyLeaderBoard = ({ navigation, route }) => {
   const [index, setIndex] = useState(0);
   const [leftQustion, setleftQustion] = useState(0)
   const [modelVive, setmodelVive] = useState(false)
-  const [modaldata, setModaldata] = useState([])
 
-  // useEffect(async() => {
-  //   const connectSockett = async () => {
-  //   const socket = io('http://3.111.23.56:5059');
+  const [leaderBoardModalData, setLeaderBoardModalData] = useState([])
 
-  //   // Event listener for connection success
-  //  // Event listener for receiving messages from the server
-  //   socket.on('message', (data) => {
-  //     console.log('Received message from the server: kkk', data);
-  //   });
-
-  //   // Event listener for receiving questions from the server
-  //   socket.on('get-question', async (questionData) => {
-  //     try {
-  //       await setleft(questionData.q_left)
-  //       await setnoOfQuestion(questionData.noOfQuestion)
-  //       let leg = await AsyncStorage.getItem("lang")
-  //       if (leg == "ENGLISH") {
-
-  //         await setQuestion(questionData.question.questionInEnglish);
-  //         await setoption(questionData.question.optionsInEnglish)
-  //         await setGetId(questionData.question._id)
-  //         await setMygameId(questionData.question.gameId)
-  //         await setMyanswer()
-
-  //       } else {
-  //         await setQuestion(questionData.question.questionInHindi);
-  //         await setoption(questionData.question.optionsInHindi);
-  //         await setGetId(questionData.question._id)
-  //         await setMygameId(questionData.question.gameId)
-  //         await setMyanswer(questionData.question.optionsInEnglish[0].id)
-
-
-  //       }
-  //       // Update the component state with the received question
-  //       console.log('Received question from the server: jon', JSON.stringify(questionData));
-  //       await setSelect("")
-  //     } catch (error) {
-  // console.log(error);
-  //     }
-
-  //   });
-  // };
-  // connectSockett();
-  // }, []);
 
   const right = 5.5;
   const wrong = 3.5;
@@ -225,7 +182,7 @@ const MyLeaderBoard = ({ navigation, route }) => {
   var count = 0;
 
   const sendData = async (rcd) => {
-    // const socket = io('http://3.111.23.56:5059');
+    // const socket = io('http://192.168.188.239:5050');
     const socket = io('https://quiz.metablocktechnologies.org');
 
     if (!select) {
@@ -249,6 +206,7 @@ const MyLeaderBoard = ({ navigation, route }) => {
     setbtndisebal(true)
     setmodelVive(true)
   }
+
   const savebtn = () => {
     // alert(parseFloat(parseFloat(initialSeconds)))
 
@@ -285,7 +243,7 @@ const MyLeaderBoard = ({ navigation, route }) => {
 
       const lang = await AsyncStorage.getItem("lang");
       const currentQuestions =
-        lang === "ENGLISH" ? questionData.QuestionEnglish : questionData.QuestionHindi;
+        lang === "ENGLISH" ? questionData?.QuestionEnglish : questionData?.QuestionHindi;
 
       if (index < currentQuestions.length) {
         console.log(currentQuestions[index].optionH, "lohggj");
@@ -329,7 +287,7 @@ const MyLeaderBoard = ({ navigation, route }) => {
   }, [questionData]);
   useEffect(() => {
     var interval;
-    if (index === 0 && questionData.length > 0) {
+    if (index === 0 && questionData?.length > 0) {
       fetchData();
     }
     else if (index <= no_qu) {
@@ -367,7 +325,7 @@ const MyLeaderBoard = ({ navigation, route }) => {
           if (result.success == true) {
             console.log(result.data, "inactive leaderboard")
             console.log(result.data.gameLeadership[0].UserGame[0], "hghghghg")
-            setModaldata(result.data.gameLeadership[0].UserGame)
+            setLeaderBoardModalData(result.data.gameLeadership[0].UserGame)
             openModal7()
           }
         })
@@ -488,13 +446,6 @@ const MyLeaderBoard = ({ navigation, route }) => {
           <View
             style={{ flexDirection: "row", justifyContent: 'space-evenly' }}
           >
-            {/* <TouchableOpacity
-              onPress={() => navigation.goBack()}
-              style={{ justifyContent: "center", alignSelf: "center" }}
-            >
-              <AntDesign name="arrowleft" size={24} color="white" />
-            </TouchableOpacity> */}
-
             <TouchableOpacity
               style={{
                 height: responsiveHeight(5),
@@ -1710,7 +1661,7 @@ const MyLeaderBoard = ({ navigation, route }) => {
               </View>
 
               {
-                modaldata?.map((res) => {
+                leaderBoardModalData?.map((res) => {
                   // console.log(res);
                   return (
                     <>

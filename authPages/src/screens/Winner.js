@@ -1,73 +1,38 @@
 import { View, Text, StatusBar, Image, TextInput, TouchableOpacity, Linking, FlatList, RefreshControl } from "react-native";
 import React, { useEffect, useState } from "react";
-import {
-  responsiveFontSize,
-  responsiveHeight,
-  responsiveWidth,
-} from "react-native-responsive-dimensions";
+import { responsiveFontSize, responsiveHeight, responsiveWidth, } from "react-native-responsive-dimensions";
 import { ScrollView } from "react-native-gesture-handler";
-import ScrollableTabView, {
-  DefaultTabBar,
-} from "react-native-scrollable-tab-view";
-import { SafeAreaView } from "react-native-safe-area-context";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { base_url } from "./Base_url";
-import OrientationLoadingOverlay from 'react-native-orientation-loading-overlay';
+import { useDispatch, useSelector } from "react-redux";
 import Topbar from "../components/Topbar";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
+import { winnerPageAllExams } from "../../slices/examSlice";
 
 const Winner = ({ navigation }) => {
-  const [data, setdata] = useState([])
-  const [lodings, setlodings] = useState(true)
-  const [filterText, setFilterText] = useState("");
-
+  const dispatch = useDispatch()
 
   const [refreshing, setRefreshing] = useState(false);
+  const [searchName, setSearchName] = useState("");
 
-  const winnerApi = async ({ name }) => {
-    try {
-      var myHeaders = new Headers();
-      myHeaders.append("Authorization", `${await AsyncStorage.getItem("token")}`);
 
-      var requestOptions = {
-        method: 'GET',
-        headers: myHeaders,
-        redirect: 'follow'
-      };
 
-      fetch(`${base_url}/winners-list?&name=${name}`, requestOptions)
-        .then(response => response.json())
-        .then(async (result) => {
-          console.log(result)
-          setdata(result.data.joingGame)
-          await AsyncStorage.setItem('g_id', result.data.joingGame[0]._id)
-          console.log('g_id', result.data.joingGame[0]._id);
-        })
-        .catch(error => console.log('error', error)).finally(() => { setlodings(false) });
-    } catch (error) {
-
-    }
-  }
+  const { winnerPageAllExamsData } = useSelector((state) => state.examCustom)
 
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
     setTimeout(() => {
-      winnerApi()
       setRefreshing(false);
     }, 2000);
   }, []);
 
-  useEffect(async () => {
-    onRefresh()
-    winnerApi({ name: filterText })
-  }, [filterText]);
+  useEffect(() => {
+    dispatch(winnerPageAllExams({ name: searchName }))
+  }, [dispatch, searchName])
+
 
   return (
     <>
-
-
       <View>
         <StatusBar
           translucent={true}
@@ -145,7 +110,7 @@ const Winner = ({ navigation }) => {
             >
               <TextInput
 
-                onChangeText={(value) => setFilterText(value)}
+                onChangeText={(value) => setSearchName(value)}
 
                 require
                 placeholder="Search here.."
@@ -181,9 +146,7 @@ const Winner = ({ navigation }) => {
           }>
 
 
-            {data?.map((res) => {
-              console.log(res, "winnerres");
-
+            {winnerPageAllExamsData?.map((res) => {
               return (
                 <>
                   <View
@@ -284,7 +247,7 @@ const Winner = ({ navigation }) => {
                           fontSize: 14,
                         }}
                       >
-                        Joined : {data?.length}
+                        Joined : {res?.noOfParticipation}
                       </Text>
                     </View>
 

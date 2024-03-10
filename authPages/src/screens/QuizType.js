@@ -100,7 +100,7 @@ const QuizType = ({ navigation, route }) => {
                 .then(response => response.json())
                 .then(result => {
                     if (result.success == true) {
-                        // console.log(result,"resultt")
+                        console.log(result,"resultt")
                         navigation.navigate('MyExam')
                     }
                     else {

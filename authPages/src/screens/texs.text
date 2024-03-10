@@ -71,7 +71,7 @@ const MyLeaderBoard = ({ navigation,route }) => {
 const [index, setIndex] = useState(0);
   // useEffect(async() => {
   //   const connectSockett = async () => {
-  //   const socket = io('http://3.111.23.56:5059');
+  //   const socket = io('https://quiz.metablocktechnologies.org');
 
   //   // Event listener for connection success
   //  // Event listener for receiving messages from the server
@@ -255,7 +255,7 @@ var interval;
   const sendData = async () => {
     
 
-    const socket = io('http://3.111.23.56:5059');
+    const socket = io('https://quiz.metablocktechnologies.org');
     socket.emit("give_answer", {
 
       questionId: await getId,

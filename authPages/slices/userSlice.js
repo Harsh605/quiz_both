@@ -28,7 +28,7 @@ export const register = createAsyncThunk("register", async ({ name, email, passw
             "Content-Type": "application/multipart/form-data"
         }
     }
-    let url = `http://3.111.23.56:5059/api/signup`
+    let url = `https://quiz.metablocktechnologies.org/api/signup`
     try {
         const response = await axios.post(url, { name, email, password, mobile }, config); // replace with your API endpoint and data
         console.log(response)
@@ -51,7 +51,7 @@ export const myProfile = createAsyncThunk(
                 }
             };
 
-            const url = 'http://3.111.23.56:5059/api/getProfile';
+            const url = 'https://quiz.metablocktechnologies.org/api/getProfile';
             const response = await axios.get(url, config);
             console.log(response.data)
             return response.data.data;
@@ -73,7 +73,7 @@ export const allOnGoingExams = createAsyncThunk(
                 }
             };
 
-            const url = 'http://3.111.23.56:5059/api/home-page';
+            const url = 'https://quiz.metablocktechnologies.org/api/home-page';
             const response = await axios.get(url, config);
             return response.data.data;
         } catch (error) {
@@ -89,7 +89,7 @@ export const allSliders = createAsyncThunk("allSliders", async () => {
         },
         withCredentials: true
     }
-    let url = `http://3.111.23.56:5059/api/slide-list`
+    let url = `https://quiz.metablocktechnologies.org/api/slide-list`
     try {
         const response = await axios.get(url, config); // replace with your API endpoint and data
         return response.data.data.slides;
@@ -109,7 +109,7 @@ export const allSocialLinks = createAsyncThunk(
                 }
             };
 
-            const url = 'http://3.111.23.56:5059/api/social-links';
+            const url = 'https://quiz.metablocktechnologies.org/api/social-links';
             const response = await axios.get(url, config);
             return response.data.data.links;
         } catch (error) {
@@ -129,7 +129,7 @@ export const pdowinLogo = createAsyncThunk(
                 }
             };
 
-            const url = 'http://3.111.23.56:5059/api/get-logo';
+            const url = 'https://quiz.metablocktechnologies.org/api/get-logo';
             const response = await axios.get(url, config);
             return response.data.data.logo;
         } catch (error) {

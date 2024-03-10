@@ -51,7 +51,7 @@ const Home = ({ navigation }) => {
 
 
   console.log(myProfileData?.user[0].userWallet[0].userId)
-  console.log("sdsd", allLiveExams?.upcomingGames[0])
+  console.log("allLiveExams", allLiveExams?.upcomingGames[0])
 
   return (
     <>

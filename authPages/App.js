@@ -55,6 +55,7 @@ import { SocketProvider } from "./src/screens/Context/SocketContext";
 import MyQuestions from "./src/screens/MyQuestions";
 import Successful from "./src/screens/Successful";
 import { myProfile } from "./slices/userSlice";
+import MyLeaderBoard2 from "./src/screens/MyLeaderBoard2";
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -79,6 +80,11 @@ function Stacks() {
         <Stack.Screen
           name="Successful"
           component={Successful}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="MyLeaderBoard2"
+          component={MyLeaderBoard2}
           options={{ headerShown: false }}
         />
         <Stack.Screen

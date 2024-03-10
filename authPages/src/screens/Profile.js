@@ -181,7 +181,7 @@ const Profile = ({ navigation }) => {
                         <TouchableOpacity onPress={pickImage} style={{ borderWidth: 2.5, borderColor: '#000', height: responsiveHeight(9), width: responsiveWidth(18), borderRadius: 100, alignSelf: 'center' }}
                         >
                             <Image source={{
-                                uri: `http://3.111.23.56:5059/uploads/${imgs}`,
+                                uri: `https://quiz.metablocktechnologies.org/uploads/${imgs}`,
                             }} style={{ height: responsiveHeight(8), width: responsiveWidth(16), borderRadius: 100, alignSelf: 'center', marginTop: 3 }} />
 
                             <View style={{ backgroundColor: '#6A5AE0', height: responsiveHeight(3), borderRadius: 100, justifyContent: 'center', width: responsiveWidth(6), zIndex: 1, marginTop: -20, marginLeft: 50 }}>

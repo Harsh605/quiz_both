@@ -1,155 +1,77 @@
-import {
-  View,
-  Text,
-  StatusBar,
-  Image,
-  TextInput,
-  TouchableOpacity,
-  RefreshControl
-} from "react-native";
+import { View, Text, StatusBar, Image, TextInput, TouchableOpacity, Linking, FlatList, RefreshControl } from "react-native";
 import React, { useEffect, useState } from "react";
-import {
-  responsiveFontSize,
-  responsiveHeight,
-  responsiveWidth,
-} from "react-native-responsive-dimensions";
+import { responsiveFontSize, responsiveHeight, responsiveWidth, } from "react-native-responsive-dimensions";
 import { ScrollView } from "react-native-gesture-handler";
-import ScrollableTabView, {
-  DefaultTabBar,
-} from "react-native-scrollable-tab-view";
-import moment from "moment";
-import { base_url } from "./Base_url";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { formatTimestamp } from "./../utils/formatDate";
-import { formattedTime } from "./../utils/FormateTime";
-// import { FormatDateTime, } from './../utils/FormateTime';
-// import { formatTimestamp } from "./../utils/formatDate";
-import { useRoute } from '@react-navigation/native';
+import { formatTimestamp, millisToMinutesAndSeconds } from "./../utils/formatDate";
+import { calculateRemainingTime, convertMillisecondsToDateTime, formattedTime } from "./../utils/FormateTime";
 import Topbar from "../components/Topbar";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
+import { useDispatch, useSelector } from "react-redux";
+import { allMyExams } from "../../slices/examSlice";
 
 
 const MyExam = ({ navigation }) => {
-
-  const route = useRoute();
-
-  const [live, setLive] = useState(0);
-  const [logodata, setLogodata] = useState([]);
+  const dispatch = useDispatch()
   const [refreshing, setRefreshing] = useState(false);
-  const [imgs, setimgs] = useState("")
+  const [remainingTimes, setRemainingTimes] = useState({});
 
+  const [tabSelect, setTabSelect] = useState(0);
+  const [searchName, setSearchName] = useState("");
 
+  const { examData } = useSelector((state) => state.examCustom)
 
-
-  const [hit, setHit] = useState("LIVE");
-  const [mydata, setMydata] = useState([]);
-  // console.log(mydata[0]?.gameId,"hi");
-  const [completedata, setCompletedata] = useState([]);
-  const [seduleTime, setSeduleTime] = useState([]);
-  const [filterText, setFilterText] = useState("");
-
-  const [question, setQuestion] = useState([]);
-
-  const [myUserid, setMyUserid] = useState();
-  console.log(myUserid, "userIdoutline");
-  const [myGameid, setMyGameid] = useState();
-
-  const [times, settimes] = useState()
-
-
-  function convertMillisecondsToDateTime(milliseconds) {
-    const dateObject = new Date(milliseconds);
-    return dateObject.toLocaleString();
-  }
-
-  const currentDate = new Date();
-  const currentTime = currentDate.getTime();
-
-
-
-  const millisToMinutesAndSeconds = (millis) => {
-    var minutes = Math.floor(millis / 60000);
-    var seconds = ((millis % 60000) / 1000).toFixed(0);
-    return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
-  }
-
-  const myexamApi = async ({ name, index }) => {
-    try {
-      var myHeaders = new Headers();
-      myHeaders.append(
-        "Authorization",
-        `${await AsyncStorage.getItem("token")}`
-      );
-
-      var requestOptions = {
-        method: "GET",
-        headers: myHeaders,
-        redirect: "follow",
-      };
-      console.log("hit",hit)
-
-      fetch(`${base_url}/my-exam?type=${hit}&name=${name}`, requestOptions)
-        .then((response) => response.json())
-        .then(async (result) => {
-          if (result.success == true) {
-            console.log(result.data.userGameList, "popop");
-            setMydata(result.data.userGameList);
-
-            await AsyncStorage.setItem("_id2", result.data.userGameList[0]._id);
-          } else {
-            console.log(result.message, "else");
-          }
-        })
-        .catch((error) => console.log("errorcatch", error));
-    } catch (error) {
-      console.log(error, "examerror");
-    }
-  };
-
-  async function navigetLo(times) {
-    const currentTimeInMilliseconds = new Date().getTime();
-    let availableTime = times - currentTimeInMilliseconds
-    const availableMinutes = Math.floor(availableTime / (1000 * 60));
-    settimes(availableMinutes)
-    if (availableMinutes < 0) {
-      alert("Expiration date ")
-    }
-    else if (availableMinutes <= 5) {
-      navigation.navigate("Instruction", {
-        times: await availableMinutes,
-        g_id: await myGameid,
-        u_id: await myUserid,
-
-      });
-    }
-    else {
-      alert(`Wait ${availableMinutes - 5} minutes and try again`);
-      // navigation.navigate("Instruction",{
-      //   times:availableMinutes
-      // });
-    }
-
-  }
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
     setTimeout(() => {
-      myexamApi()
       setRefreshing(false);
     }, 2000);
   }, []);
 
 
+  useEffect(() => {
+    if (tabSelect == 0) {
+      dispatch(allMyExams({ hit: "LIVE", name: searchName }))
+    }
+    else {
+      dispatch(allMyExams({ hit: "COMPLETED", name: searchName }))
+    }
+  }, [dispatch, searchName, tabSelect])
 
-  useEffect(async () => {
-    setimgs(await AsyncStorage.getItem("pr"))
-    onRefresh()
-    myexamApi({ name: filterText })
-  }, [filterText]);
+
+  const timeNavigation = async ({ game_ID, times, scheduleTime, gameId, userId }) => {
+    const currentTimeInMilliseconds = Date.now();
+    const availableMinutes = Math.floor((times - currentTimeInMilliseconds) / (1000 * 60));
+
+    if (availableMinutes < 0) {
+      alert("Expiration date");
+    } else if (availableMinutes <= 60) {
+      navigation.navigate("Instruction", {
+        times: availableMinutes,
+        scheduleTime: scheduleTime,
+        game_ID,
+        gameId: gameId,
+        userId: userId,
+      });
+    } else {
+      alert(`Wait ${availableMinutes - 5} minutes and try again`);
+    }
+  }
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      const updatedTimes = {};
+      examData?.forEach(data => {
+        updatedTimes[data?.gameId] = calculateRemainingTime(data?.Game[0].schedule);
+      });
+      setRemainingTimes(updatedTimes);
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, [examData]);
 
 
-
+console.log("examData",examData)
   return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
       <StatusBar
@@ -193,17 +115,17 @@ const MyExam = ({ navigation }) => {
             height: responsiveHeight(4.3),
             justifyContent: "center",
             borderRadius: 25,
-            borderWidth: live == 0 ? 0 : 1,
+            borderWidth: tabSelect == 0 ? 0 : 1,
             width: responsiveWidth(42),
             marginTop: 20,
-            backgroundColor: live == 0 ? "#6A5AE0" : "#fff",
+            backgroundColor: tabSelect == 0 ? "#6A5AE0" : "#fff",
             alignSelf: "flex-start",
           }}
-          onPress={() => setLive(0)}
+          onPress={() => setTabSelect(0)}
         >
           <Text
             style={{
-              color: live == 0 ? "#fff" : "#000",
+              color: tabSelect == 0 ? "#fff" : "#000",
               fontWeight: "400",
               alignSelf: "center",
               fontSize: 16,
@@ -216,22 +138,22 @@ const MyExam = ({ navigation }) => {
         <TouchableOpacity
           style={{
             height: responsiveHeight(4.3),
-            borderWidth: live == 1 ? 0 : 1,
+            borderWidth: tabSelect == 1 ? 0 : 1,
             justifyContent: "center",
             borderRadius: 25,
             width: responsiveWidth(42),
             marginTop: 20,
-            backgroundColor: live == 1 ? "#6A5AE0" : "#fff",
+            backgroundColor: tabSelect == 1 ? "#6A5AE0" : "#fff",
             alignSelf: "flex-start",
           }}
           onPress={() =>
-            setLive(1)
+            setTabSelect(1)
             // , setHit("COMPLETED");
           }
         >
           <Text
             style={{
-              color: live == 1 ? "#fff" : "#000",
+              color: tabSelect == 1 ? "#fff" : "#000",
               fontWeight: "400",
               alignSelf: "center",
               fontSize: 16,
@@ -290,8 +212,8 @@ const MyExam = ({ navigation }) => {
               // onChangeText={(value)=>{
               //   myexamApi(value)
               // }}
-              // value={filterText}
-              onChangeText={(value) => setFilterText(value)}
+              // value={searchName}
+              onChangeText={(value) => setSearchName(value)}
               require
               placeholder="Search here.."
               placeholderTextColor={"#000"}
@@ -323,15 +245,10 @@ const MyExam = ({ navigation }) => {
         <ScrollView refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }>
-          {live == 0 ? (
+          {tabSelect == 0 ? (
             <View>
-              {mydata?.length > 0 ? (
-                mydata.filter(item => item.isCompleted === true).map((data, index) => {
-                  // console.log(data, 'data');
-                  // console.log(data?.userId,"inlineUseriddd..");
-                  // console.log(data?.isCompleted,"isCompleted..");
-
-
+              {examData?.length > 0 ? (
+                [...examData].sort((a, b) => b.schedule - a.schedule).map((data, index) => {
                   return (
                     <>
                       <View
@@ -366,7 +283,7 @@ const MyExam = ({ navigation }) => {
                             marginTop: 5,
                           }}
                         >
-                          {data?.Game[0].category}
+                          {data?.Game[0]?.category}
                         </Text>
 
                         <View
@@ -423,7 +340,7 @@ const MyExam = ({ navigation }) => {
                               fontSize: 13,
                             }}
                           >
-                            {data?.Game[0].noOfQuestion} Questions | Time {millisToMinutesAndSeconds(data?.Game[0].duration)} minss
+                            {data?.Game[0]?.noOfQuestion} Questions | Time {millisToMinutesAndSeconds(data?.Game[0]?.duration)} minss
                           </Text>
                         </View>
 
@@ -446,7 +363,7 @@ const MyExam = ({ navigation }) => {
                               fontSize: 14,
                             }}
                           >
-                            Joined Member : {data?.Game[0].UserGame.length}
+                            Joined Member : {data?.Game[0]?.UserGame.length}
                           </Text>
                         </View>
 
@@ -469,7 +386,7 @@ const MyExam = ({ navigation }) => {
                               fontSize: 14,
                             }}
                           >
-                            Joined Fees: ₹{data?.Game[0].entranceAmount}
+                            Joined Fees: ₹{data?.Game[0]?.entranceAmount}
                           </Text>
                         </View>
 
@@ -489,15 +406,20 @@ const MyExam = ({ navigation }) => {
                             height: responsiveHeight(4.8),
                             justifyContent: "center",
                             borderRadius: 25,
-                            width: responsiveWidth(28),
+                            width: responsiveWidth(80),
                             marginTop: 20,
                             backgroundColor: "#A9A3E9",
                             alignSelf: "flex-start",
+
                           }}
                           onPress={() => {
-                            setMyGameid(data?.gameId), setMyUserid(data?.userId),
-                              navigetLo(data?.schedule)
+
+                            timeNavigation({ times: data?.schedule, game_ID: data?._id, scheduleTime: data?.schedule, gameId: data?.gameId, userId: data?.userId })
                           }}
+                          disabled={
+                            Date.now() >= data?.Game[0].schedule || // Disable after exam starts
+                            Date.now() <= data?.Game[0].schedule - 60 * 60 * 1000 // Disable 5 minutes before exam
+                          }
                         >
                           <Text
                             style={{
@@ -507,7 +429,10 @@ const MyExam = ({ navigation }) => {
                               fontSize: 16,
                             }}
                           >
-                            Join Now
+                            {Date.now() <= data?.Game[0].schedule - 60 * 60 * 1000 ?
+                              `Exam Starts in: ${remainingTimes[data?.gameId]?.hours}h ${remainingTimes[data?.gameId]?.minutes}m ${remainingTimes[data?.gameId]?.seconds}s`
+                              : data?.Game[0].schedule < Date.now() ? "Exam Already Started" : "Join Now"
+                            }
                           </Text>
                         </TouchableOpacity>
                       </View>
@@ -536,12 +461,10 @@ const MyExam = ({ navigation }) => {
             </View>
           ) : null}
 
-          {live == 1 ? (
+          {tabSelect == 1 ? (
             <View>
-              {mydata?.length > 0 ? (
-                mydata.filter(item => item.isCompleted === true).map((item) => {
-                  // console.log(item.gameNameInEnglish, "inlinedataabhi");
-                  // console.log(item?.isCompleted,"isCompleted..");
+              {examData?.length > 0 ? (
+                [...examData].sort((a, b) => b.schedule - a.schedule).map((item, index) => {
 
                   return (
                     <>
@@ -755,7 +678,7 @@ const MyExam = ({ navigation }) => {
                     fontSize: 18,
                   }}
                 >
-                  No data
+                  No data found
                 </Text>
               )}
             </View>

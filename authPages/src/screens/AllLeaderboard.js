@@ -1,82 +1,40 @@
 import { View, Text, StatusBar, Image, TextInput, TouchableOpacity } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions'
+import { responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions'
 import { ScrollView } from 'react-native-gesture-handler'
-import ScrollableTabView, { DefaultTabBar } from 'react-native-scrollable-tab-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AntDesign } from '@expo/vector-icons';
 import PieChart from 'react-native-pie-chart';
 import { BarChart } from 'react-native-chart-kit';
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { base_url } from './Base_url';
+import { useDispatch, useSelector } from 'react-redux';
+import { winnersListPageAllDataOfAUserForParticularExam } from '../../slices/examSlice';
 
 
 
-const AllLeaderboard = ({ navigation,route }) => {
+const AllLeaderboard = ({ navigation, route }) => {
+    const dispatch = useDispatch()
+
+    const [selectedQueNo, setSelectedQueNo] = useState(1)
     const [select, setSelect] = useState('')
-    
-    const [number, setNumber] = useState(1)
-    const [mydata, setMydata] = useState("")
+    const [chartData, setChartData] = useState('')
 
-    const [question, setquestion] = useState([])
-    // const navigation = useNavigation();
-    // const route = useRoute();
 
-    const [rowdata, setRowdata] = useState([])
-
-    const [chartdata, setChartdata] = useState([])
-    const [attempte, setAttempte] = useState([])
-    const [rankdata, setRankdata] = useState([])
-
-    const under = route.params?.gameid || null;
+    const gameId = route.params?.gameid || null;
     const noOfQue = route.params?.noOfQue || null;
 
-    console.log(noOfQue, "noofquestion");
-    console.log(under, "underscoredd");
+    const { winnersListPageAllDataOfAUserForParticularExamData } = useSelector((state) => state.examCustom)
 
 
-
-    const [gamid,setGamid] = useState(under)
-    const [queNo,setQueNo] = useState(noOfQue)
-
-
-    const resultApi = async (n) => {
-        // alert(n)
-        try {
-            var myHeaders = new Headers();
-            myHeaders.append("Authorization", `${await AsyncStorage.getItem("token")}`);
-
-            var requestOptions = {
-                method: 'GET',
-                headers: myHeaders,
-                redirect: 'follow'
-            };
-
-            fetch(`${base_url}/quiz-result?q_no=${n}`, requestOptions)
-                .then(response => response.json())
-                .then(result => {
-                    if (result.success == true) {
-                        console.log(result.data.gameQuestion[0].questionleaderShip, "rcc")
-                        setRankdata(result.data.gameQuestion[0].questionleaderShip)
-                        
-
-                        setAttempte(result.data.gameQuestion[0])
-
-                        setRowdata(result.data.gameQuestion[0].UserQuestion)
-                        setMydata(result.data.gameQuestion[0].question)
-
-                        setquestion(result.data.gameQuestion[0].options)
-
-                        setChartdata(result.data.gameQuestion[0].ContestMembers)
-
-                    }
-                })
-                .catch(error => console.log('error', error));
-
-        } catch (error) {
-            console.log(error, "ghgh");
-        }
-    }
+    const [searchQuery, setSearchQuery] = useState('');
+    const [searchFilteredData, setSearchFilteredData] = useState(winnersListPageAllDataOfAUserForParticularExamData?.questionleaderShip);
+    const handleSearch = () => {
+        const filtered = winnersListPageAllDataOfAUserForParticularExamData?.questionleaderShip?.filter(item => {
+            const nameMatches = item?.UserQuestion?.User?.name?.toLowerCase().includes(searchQuery.toLowerCase());
+            const regIdMatches = item?.UserQuestion?.User?.regId?.toLowerCase().includes(searchQuery.toLowerCase());
+            return nameMatches || regIdMatches;
+        });
+        setSearchFilteredData(filtered);
+    };
 
 
 
@@ -90,14 +48,14 @@ const AllLeaderboard = ({ navigation,route }) => {
                     style={{
                         height: responsiveHeight(4.8),
                         marginRight: 10,
-                        backgroundColor: number === i ? '#6A5AE0' : '#fff',
+                        backgroundColor: selectedQueNo === i ? '#6A5AE0' : '#fff',
                         width: responsiveWidth(10),
                         borderWidth: 1,
                         borderRadius: 100,
                         justifyContent: 'center',
                     }}
                     onPress={() => {
-                        setNumber(i);
+                        setSelectedQueNo(i);
                         resultApi(i);
                     }}
                 >
@@ -106,7 +64,7 @@ const AllLeaderboard = ({ navigation,route }) => {
                             alignSelf: 'center',
                             fontWeight: '600',
                             fontSize: 18,
-                            color: number === i ? '#fff' : '#6A5AE0',
+                            color: selectedQueNo === i ? '#fff' : '#6A5AE0',
                         }}
                     >
                         {i}
@@ -120,31 +78,57 @@ const AllLeaderboard = ({ navigation,route }) => {
 
 
 
-    const widthAndHeight = 150;
-    const series = [`${attempte.attempted}`, `${attempte.not_attempted}`];
-    const sliceColor = ['#6A5AE0', '#A8A8A8'];
 
+    // const widthAndHeight = 150;
+    // const series = [`${winnersListPageAllDataOfAUserForParticularExamData?.attempted}`, `${winnersListPageAllDataOfAUserForParticularExamData?.not_attempted}`];
+    // const sliceColor = ['#6A5AE0', '#A8A8A8'];
 
     const widthAndHeight2 = 150;
-    const series2 = [`${attempte.correctPercnt}`, `${attempte.wrongPercnt}`];
+    const series2 = [`${winnersListPageAllDataOfAUserForParticularExamData?.correctPercnt}`, `${winnersListPageAllDataOfAUserForParticularExamData?.wrongPercnt}`];
     const sliceColor2 = ['#0085FF', '#A8A8A8'];
 
     const data = {
         labels: ['A', 'B', 'C', 'D'],
-        datasets: [
-            {
-                data: [`${chartdata.A}`, `${chartdata.B}`, `${chartdata.C}`, `${chartdata.D}`],
-                color: (opacity = 1) => `rgba(134, 65, 244, ${opacity})`, // Default color for all bars
-                barColors: ['red', 'green', 'blue', 'purple']
-            },
-        ],
+        datasets: [{
+            data: [
+                chartData['A'], // Count of users who selected option A
+                chartData['B'], // Count of users who selected option B
+                chartData['C'], // Count of users who selected option C
+                chartData['D'], // Count of users who selected option D
+            ],
+            color: (opacity = 1) => `rgba(134, 65, 244, ${opacity})`, // Default color for all bars
+            barColors: ['red', 'green', 'blue', 'purple']
+        }]
     };
 
     useEffect(() => {
-        resultApi();
-    }, [])
+        dispatch(winnersListPageAllDataOfAUserForParticularExam({ gameId, que_no: selectedQueNo }))
+    }, [dispatch, selectedQueNo])
 
+    useEffect(() => {
+        // Ensure winnersListPageAllDataOfAUserForParticularExamData is not null before accessing its properties
+        if (winnersListPageAllDataOfAUserForParticularExamData) {
+            const counts = {
+                A: 0,
+                B: 0,
+                C: 0,
+                D: 0
+            };
 
+            // Iterate through questionleaderShip array to count occurrences of each option
+            winnersListPageAllDataOfAUserForParticularExamData?.questionleaderShip?.forEach(item => {
+                const userAnswer = item?.UserQuestion?.answer;
+                if (userAnswer) {
+                    counts[String.fromCharCode(64 + userAnswer)]++; // Convert answer number to option letter (A, B, C, D)
+                }
+            });
+
+            // Update chartdata state with the new counts
+            setChartData(counts);
+        }
+    }, [winnersListPageAllDataOfAUserForParticularExamData]);
+
+    console.log(chartData['A'])
     return (
         <SafeAreaView  >
             <StatusBar translucent={true} barStyle={'light-content'} backgroundColor={'#6A5AE0'} />
@@ -164,26 +148,19 @@ const AllLeaderboard = ({ navigation,route }) => {
 
 
 
-            <ScrollView style={{ flexDirection: 'row' }} horizontal showsHorizontalScrollIndicator={false} >
+                <ScrollView style={{ flexDirection: 'row' }} horizontal showsHorizontalScrollIndicator={false} >
                     <View style={{ flexDirection: 'row', marginTop: 15, marginHorizontal: 20 }}>
 
-                        {/* <TouchableOpacity style={{ height: responsiveHeight(4.8), marginRight: 10, backgroundColor: number == 1 ? '#6A5AE0' : '#fff', width: responsiveWidth(10), borderWidth: 1, borderRadius: 100, justifyContent: 'center' }}
-                            onPress={() => setNumber(1)}>
-                            <Text style={{ alignSelf: 'center', fontWeight: '600', fontSize: 18, color: number == 1 ? '#fff' : '#6A5AE0' }}>1</Text>
-                        </TouchableOpacity> */}
-
                         {renderButtons()}
-
-
 
                     </View>
                 </ScrollView>
 
 
                 <View style={{ height: responsiveHeight(32), width: responsiveWidth(90), marginBottom: 10, paddingHorizontal: 20, backgroundColor: '#fff', alignSelf: 'center', marginTop: 10, borderRadius: 8, elevation: 10 }}>
-                    <Text style={{ marginTop: 20, fontSize: 17, fontWeight: '500', color: '#000' }}>Q. {mydata}</Text>
+                    <Text style={{ marginTop: 20, fontSize: 17, fontWeight: '500', color: '#000' }}>Q. {winnersListPageAllDataOfAUserForParticularExamData?.question}</Text>
 
-                    {question?.map((res) => {
+                    {winnersListPageAllDataOfAUserForParticularExamData?.options?.map((res) => {
                         return (
                             <>
                                 <View style={{ marginTop: 10, flexDirection: 'row', marginRight: 20 }}>
@@ -208,7 +185,7 @@ const AllLeaderboard = ({ navigation,route }) => {
                 <View style={{ height: responsiveHeight(60), alignSelf: 'center', width: responsiveWidth(90), marginBottom: 10, backgroundColor: '#fff', alignSelf: 'center', marginTop: 10, borderRadius: 8, elevation: 10 }}>
 
 
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 10 }}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'center', marginHorizontal: 10 }}>
 
                         <View style={{ marginTop: 30, alignSelf: 'center' }}>
                             <PieChart
@@ -221,7 +198,7 @@ const AllLeaderboard = ({ navigation,route }) => {
                         </View>
 
 
-                        <View style={{ marginTop: 30, alignSelf: 'center' }}>
+                        {/* <View style={{ marginTop: 30, alignSelf: 'center' }}>
                             <PieChart
                                 widthAndHeight={widthAndHeight}
                                 series={series}
@@ -229,63 +206,63 @@ const AllLeaderboard = ({ navigation,route }) => {
                                 coverRadius={0.45}
                                 coverFill={'#FFF'}
                             />
-                        </View>
+                        </View> */}
 
 
 
                     </View>
 
-                    {
-                        attempte.attempted <= attempte.not_attempted ? (
+                    {/* {
+                        winnersListPageAllDataOfAUserForParticularExamData?.attempted <= winnersListPageAllDataOfAUserForParticularExamData?.not_attempted ? (
 
-                            <Text style={{ fontSize: 14, position: 'absolute', color: '#fff', fontWeight: '500', top: '10%', right: '12%' }}>{((attempte.attempted) / (attempte.not_attempted + attempte.attempted) * 100).toFixed(2)}</Text>
+                            <Text style={{ fontSize: 14, position: 'absolute', color: '#fff', fontWeight: '500', top: '10%', right: '12%' }}>{((winnersListPageAllDataOfAUserForParticularExamData?.attempted) / (winnersListPageAllDataOfAUserForParticularExamData?.not_attempted + winnersListPageAllDataOfAUserForParticularExamData?.attempted) * 100).toFixed(2)}</Text>
                         ) :
                             (
                                 <>
-                                    <Text style={{ fontSize: 14, position: 'absolute', color: '#fff', fontWeight: '500', top: '20%', right: '4%' }}>{((attempte.attempted) / (attempte.not_attempted + attempte.attempted) * 100).toFixed(2)}</Text>
+                                    <Text style={{ fontSize: 14, position: 'absolute', color: '#fff', fontWeight: '500', top: '20%', right: '4%' }}>{((winnersListPageAllDataOfAUserForParticularExamData?.attempted) / (winnersListPageAllDataOfAUserForParticularExamData?.not_attempted + winnersListPageAllDataOfAUserForParticularExamData?.attempted) * 100).toFixed(2)}</Text>
                                 </>
                             )
-                    }
+                    } */}
 
-                    {
-                        attempte.attempted <= attempte.not_attempted ? (
-                            <Text style={{ fontSize: 14, position: 'absolute', top: '20%', fontWeight: '500', right: '35%', color: '#6A5AE0' }}>{((attempte.not_attempted) / (attempte.not_attempted + attempte.attempted) * 100).toFixed(2)}
+                    {/* {
+                        winnersListPageAllDataOfAUserForParticularExamData?.attempted <= winnersListPageAllDataOfAUserForParticularExamData?.not_attempted ? (
+                            <Text style={{ fontSize: 14, position: 'absolute', top: '20%', fontWeight: '500', right: '35%', color: '#6A5AE0' }}>{((winnersListPageAllDataOfAUserForParticularExamData?.not_attempted) / (winnersListPageAllDataOfAUserForParticularExamData?.not_attempted + winnersListPageAllDataOfAUserForParticularExamData?.attempted) * 100).toFixed(2)}
 
                             </Text>
                         ) :
                             (
                                 <>
-                                    <Text style={{ fontSize: 14, position: 'absolute', top: '10%', fontWeight: '500', right: '28%', color: '#6A5AE0' }}>{((attempte.not_attempted) / (attempte.not_attempted + attempte.attempted) * 100).toFixed(2)}
+                                    <Text style={{ fontSize: 14, position: 'absolute', top: '10%', fontWeight: '500', right: '28%', color: '#6A5AE0' }}>{((winnersListPageAllDataOfAUserForParticularExamData?.not_attempted) / (winnersListPageAllDataOfAUserForParticularExamData?.not_attempted + winnersListPageAllDataOfAUserForParticularExamData?.attempted) * 100).toFixed(2)}
 
                                     </Text>
                                 </>
                             )
-                    }
+                    } */}
 
                     {/* aall */}
 
 
                     {
-                        attempte.correctPercnt <= attempte.wrongPercnt ? (
+                        winnersListPageAllDataOfAUserForParticularExamData?.correctPercnt <= winnersListPageAllDataOfAUserForParticularExamData?.wrongPercnt ? (
 
-                            <Text style={{ fontSize: 14, position: 'absolute', color: '#000', fontWeight: '500', top: '10%', right: '63%' }}>{((attempte.correctPercnt) / (attempte.wrongPercnt + attempte.correctPercnt) * 100).toFixed(0)}%</Text>
+                            <Text style={{ fontSize: 14, position: 'absolute', color: '#000', fontWeight: '500', top: '10%', right: '36%' }}>{((winnersListPageAllDataOfAUserForParticularExamData?.correctPercnt) / (winnersListPageAllDataOfAUserForParticularExamData?.wrongPercnt + winnersListPageAllDataOfAUserForParticularExamData?.correctPercnt) * 100).toFixed(0)}%</Text>
                         ) :
                             (
                                 <>
-                                    <Text style={{ fontSize: 14, position: 'absolute', color: '#000', fontWeight: '500', top: '20%', right: '55%' }}>{((attempte.correctPercnt) / (attempte.wrongPercnt + attempte.correctPercnt) * 100).toFixed(0)}%</Text>
+                                    <Text style={{ fontSize: 14, position: 'absolute', color: '#000', fontWeight: '500', top: '20%', right: '30%' }}>{((winnersListPageAllDataOfAUserForParticularExamData?.correctPercnt) / (winnersListPageAllDataOfAUserForParticularExamData?.wrongPercnt + winnersListPageAllDataOfAUserForParticularExamData?.correctPercnt) * 100).toFixed(0)}%</Text>
                                 </>
                             )
                     }
 
                     {
-                        attempte.correctPercnt >= attempte.wrongPercnt ? (
-                            <Text style={{ fontSize: 14, position: 'absolute', top: '20%', fontWeight: '500', right: '86%', color: '#0085FF' }}>{((attempte.wrongPercnt) / (attempte.wrongPercnt + attempte.correctPercnt) * 100).toFixed(0)}%
+                        winnersListPageAllDataOfAUserForParticularExamData?.correctPercnt >= winnersListPageAllDataOfAUserForParticularExamData?.wrongPercnt ? (
+                            <Text style={{ fontSize: 14, position: 'absolute', top: '20%', fontWeight: '500', right: '58%', color: '#0085FF' }}>{((winnersListPageAllDataOfAUserForParticularExamData?.wrongPercnt) / (winnersListPageAllDataOfAUserForParticularExamData?.wrongPercnt + winnersListPageAllDataOfAUserForParticularExamData?.correctPercnt) * 100).toFixed(0)}%
 
                             </Text>
                         ) :
                             (
                                 <>
-                                    <Text style={{ fontSize: 14, position: 'absolute', top: '10%', fontWeight: '500', right: '79%', color: '#0085FF' }}>{((attempte.wrongPercnt) / (attempte.wrongPercnt + attempte.correctPercnt) * 100).toFixed(0)}%
+                                    <Text style={{ fontSize: 14, position: 'absolute', top: '10%', fontWeight: '500', right: '53%', color: '#0085FF' }}>{((winnersListPageAllDataOfAUserForParticularExamData?.wrongPercnt) / (winnersListPageAllDataOfAUserForParticularExamData?.wrongPercnt + winnersListPageAllDataOfAUserForParticularExamData?.correctPercnt) * 100).toFixed(0)}%
 
                                     </Text>
                                 </>
@@ -295,7 +272,7 @@ const AllLeaderboard = ({ navigation,route }) => {
 
 
 
-                    <View style={{ marginTop: '5%', flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 50 }}>
+                    <View style={{ marginTop: '5%', flexDirection: 'row', justifyContent: 'center', marginHorizontal: 50 }}>
 
                         <View>
 
@@ -304,7 +281,7 @@ const AllLeaderboard = ({ navigation,route }) => {
 
                                 </View>
 
-                                <Text style={{ fontSize: 11, marginRight: 10, marginLeft: 10 }}>{attempte.correctPercnt} Correct</Text>
+                                <Text style={{ fontSize: 11, marginRight: 10, marginLeft: 10 }}>{winnersListPageAllDataOfAUserForParticularExamData?.correctPercnt} Correct</Text>
                             </View>
 
                             <View style={{ flexDirection: 'row' }}>
@@ -312,18 +289,18 @@ const AllLeaderboard = ({ navigation,route }) => {
 
                                 </View>
 
-                                <Text style={{ fontSize: 11, marginLeft: 10 }}>{attempte.wrongPercnt} Incorrect</Text>
+                                <Text style={{ fontSize: 11, marginLeft: 10 }}>{winnersListPageAllDataOfAUserForParticularExamData?.wrongPercnt} Incorrect</Text>
                             </View>
                         </View>
 
-                        <View>
+                        {/* <View>
 
                             <View style={{ flexDirection: 'row' }}>
                                 <View style={{ height: responsiveHeight(1.5), width: responsiveWidth(3), backgroundColor: '#6A5AE0', alignSelf: 'center' }}>
 
                                 </View>
 
-                                <Text style={{ fontSize: 11, marginRight: 10, marginLeft: 10 }}>{attempte.attempted} Attempted</Text>
+                                <Text style={{ fontSize: 11, marginRight: 10, marginLeft: 10 }}>{winnersListPageAllDataOfAUserForParticularExamData?.attempted} Attempted</Text>
                             </View>
 
                             <View style={{ flexDirection: 'row' }}>
@@ -331,9 +308,9 @@ const AllLeaderboard = ({ navigation,route }) => {
 
                                 </View>
 
-                                <Text style={{ fontSize: 11, marginLeft: 10 }}>{attempte.not_attempted} Not Attempted</Text>
+                                <Text style={{ fontSize: 11, marginLeft: 10 }}>{winnersListPageAllDataOfAUserForParticularExamData?.not_attempted} Not Attempted</Text>
                             </View>
-                        </View>
+                        </View> */}
 
 
 
@@ -363,6 +340,7 @@ const AllLeaderboard = ({ navigation,route }) => {
                                     borderRadius: 16,
                                 },
                             }}
+
                             style={{
                                 marginVertical: 8,
                                 borderRadius: 16,
@@ -399,51 +377,56 @@ const AllLeaderboard = ({ navigation,route }) => {
                         </View>
 
                         <View style={{ flex: 0.80, justifyContent: 'center', alignSelf: 'center' }}>
-                            <TextInput require placeholder='Search here..' placeholderTextColor={'#000'} style={{ color: '#000', marginLeft: 15, fontWeight: '400', fontSize: 17, fontFamily: 'Jaldi-Regular' }} />
+                            <TextInput
+                                require placeholder='Search here..' placeholderTextColor={'#000'} style={{ color: '#000', marginLeft: 15, fontWeight: '400', fontSize: 17, fontFamily: 'Jaldi-Regular' }}
+                                value={searchQuery}
+                                onChangeText={text => setSearchQuery(text)}
+                                onSubmitEditing={handleSearch}
+                            />
                         </View>
 
                     </View>
 
-                    <View style={{ alignSelf: 'center' }}>
+                    {/* <View style={{ alignSelf: 'center' }}>
                         <Image source={require('../images/calender.png')} style={{ tintColor: '#fff', height: responsiveHeight(4), width: responsiveWidth(8) }} />
 
-                    </View>
+                    </View> */}
 
                 </View>
 
-                <View style={{ height: responsiveHeight(42), marginBottom: 50, width: responsiveWidth(90), elevation: 10, paddingHorizontal: 20, backgroundColor: '#fff', alignSelf: 'center', borderBottomLeftRadius: 8, borderBottomRightRadius: 8 }}>
+                <View style={{ height: responsiveHeight(42), marginBottom: 50, width: responsiveWidth(90), elevation: 10, paddingHorizontal: 5, backgroundColor: '#fff', alignSelf: 'center', borderBottomLeftRadius: 8, borderBottomRightRadius: 8 }}>
+                    <ScrollView>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', height: responsiveHeight(6), width: responsiveWidth(86), borderRadius: 2, marginTop: 5, backgroundColor: '#fff', alignSelf: 'center' }}>
+                            <Text style={{ alignSelf: 'center', color: '#000', fontWeight: '500' }}>Rank</Text>
+                            <Text style={{ alignSelf: 'center', color: '#000', fontWeight: '500', marginLeft: 20 }}>Name</Text>
+                            <Text style={{ alignSelf: 'center', color: '#000', fontWeight: '500', marginLeft: 20 }}>Reg.ID</Text>
 
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', height: responsiveHeight(6), width: responsiveWidth(86), borderRadius: 2, marginTop: 5, backgroundColor: '#fff', alignSelf: 'center' }}>
-                        <Text style={{ alignSelf: 'center', color: '#000', fontWeight: '500' }}>Rank</Text>
-                        <Text style={{ alignSelf: 'center', color: '#000', fontWeight: '500', marginLeft: 20 }}>Name</Text>
-                        <Text style={{ alignSelf: 'center', color: '#000', fontWeight: '500', marginLeft: 20 }}>Reg.ID</Text>
+                            <Text style={{ alignSelf: 'center', color: '#000', fontWeight: '500' }}>Points</Text>
 
-                        <Text style={{ alignSelf: 'center', color: '#000', fontWeight: '500' }}>Points</Text>
+                        </View>
 
-                    </View>
-
-                    {
-                        rankdata?.map((item, i) => {
-                            console.log(item, "myitem");
-
-                            return (
-                                <>
-                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 10, height: responsiveHeight(6), width: responsiveWidth(86), borderRadius: 2, marginTop: 5, backgroundColor: '#EDEAFB', alignSelf: 'center' }}>
-                                        <Text style={{ alignSelf: 'center', color: '#6A5AE0' }}>#{item?.UserQuestion.rank}a</Text>
-                                        <Text style={{ alignSelf: 'center', color: '#000' }}>{item?.UserQuestion.User?.name}</Text>
-                                        <Text style={{ alignSelf: 'center', color: 'green' }}>{item?.UserQuestion.User._id}</Text>
-                                        <Text style={{ alignSelf: 'center', color: '#000', fontWeight: '500' }}>7.5</Text>
-                                    </View>
-                                </>
-                            );
-                        })
-
-
-
-                    }
+                        {
+                            searchFilteredData?.sort((a, b) => a?.UserQuestion?.rank - b?.UserQuestion?.rank) // Sort by rank
+                                .map((item, i) => {
+                                    console.log(item, "myitem");
+                                    return (
+                                        <>
+                                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 10, height: responsiveHeight(6), width: responsiveWidth(86), borderRadius: 2, marginTop: 5, backgroundColor: '#EDEAFB', alignSelf: 'center' }}>
+                                                <Text style={{ alignSelf: 'center', color: '#6A5AE0' }}>#{item?.UserQuestion.rank}</Text>
+                                                <Text style={{ alignSelf: 'center', color: '#000' }}>{item?.UserQuestion.User?.name}</Text>
+                                                <Text style={{ alignSelf: 'center', color: 'green' }}>{item?.UserQuestion.User._id}</Text>
+                                                <Text style={{ alignSelf: 'center', color: '#000', fontWeight: '500' }}>7.5</Text>
+                                            </View>
+                                        </>
+                                    );
+                                })
 
 
 
+                        }
+
+
+                    </ScrollView>
                 </View>
 
             </ScrollView>

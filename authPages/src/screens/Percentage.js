@@ -1,85 +1,33 @@
-import {
-  View,
-  Text,
-  StatusBar,
-  Image,
-  TextInput,
-  TouchableOpacity,
-  RefreshControl
-} from "react-native";
+import { View, Text, StatusBar, Image, TextInput, TouchableOpacity, Linking, FlatList, RefreshControl } from "react-native";
 import React, { useEffect, useState } from "react";
-import {
-  responsiveFontSize,
-  responsiveHeight,
-  responsiveWidth,
-} from "react-native-responsive-dimensions";
+import { responsiveFontSize, responsiveHeight, responsiveWidth, } from "react-native-responsive-dimensions";
 import { ScrollView } from "react-native-gesture-handler";
-import ScrollableTabView, {
-  DefaultTabBar,
-} from "react-native-scrollable-tab-view";
 import { base_url } from "./Base_url";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Topbar from "../components/Topbar";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
+import { correctPercentPageAllExams } from "../../slices/examSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 
 const Percentage = ({ navigation }) => {
-  const [data, setdata] = useState([])
+  const dispatch = useDispatch()
   const [filterText, setFilterText] = useState("");
-  const [logodata, setLogodata] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
-  const [imgs, setimgs] = useState("")
 
-
-
-
-
-  const correctApi = async (name) => {
-    try {
-      var myHeaders = new Headers();
-      myHeaders.append("Authorization", `${await AsyncStorage.getItem("token")}`);
-
-      var requestOptions = {
-        method: 'GET',
-        headers: myHeaders,
-        redirect: 'follow'
-      };
-
-      fetch(`${base_url}/correct-percent?&name=${name}`, requestOptions)
-        .then(response => response.json())
-        .then(result => {
-          if (result.success == true) {
-            console.log(result.data.joingGame)
-            setdata(result.data.joingGame)
-
-          }
-          else {
-            console.log(result.message, "else");
-          }
-        })
-        .catch(error => console.log('error', error));
-
-    } catch (error) {
-      console.log(error);
-    }
-  }
+  const { correctPercentPageAllExamsData } = useSelector((state) => state.examCustom)
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
     setTimeout(() => {
-      correctApi()
       setRefreshing(false);
     }, 2000);
   }, []);
 
-
-
-
-  useEffect(async () => {
-    setimgs(await AsyncStorage.getItem("pr"))
-    correctApi({ name: filterText })
-  }, [filterText]);
+  useEffect(() => {
+    dispatch(correctPercentPageAllExams({ name: filterText }))
+  }, [dispatch, filterText]);
 
   return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
@@ -194,7 +142,7 @@ const Percentage = ({ navigation }) => {
         }>
 
           {
-            data?.map((res) => {
+            correctPercentPageAllExamsData?.map((res) => {
               console.log(res, "percentress");
               return (
                 <>
@@ -295,7 +243,7 @@ const Percentage = ({ navigation }) => {
                           fontSize: 14,
                         }}
                       >
-                        Joined : {data?.length}
+                        Joined : {res?.noOfParticipation}
                       </Text>
                     </View>
 
@@ -323,9 +271,9 @@ const Percentage = ({ navigation }) => {
                     </View>
 
                     <View
-                      style={{ flexDirection: "row", justifyContent: "space-between" }}
+                      style={{ flexDirection: "row", justifyContent: "center" }}
                     >
-                      <TouchableOpacity
+                      {/* <TouchableOpacity
                         style={{
                           height: responsiveHeight(4.8),
                           justifyContent: "center",
@@ -348,15 +296,16 @@ const Percentage = ({ navigation }) => {
                         >
                           Leaderboard
                         </Text>
-                      </TouchableOpacity>
+                      </TouchableOpacity> */}
 
                       <TouchableOpacity
                         style={{
                           height: responsiveHeight(4.8),
                           justifyContent: "center",
                           borderRadius: 25,
-                          width: responsiveWidth(38),
-                          marginTop: 20,
+                          alignSelf: "center",
+                          width: responsiveWidth(48),
+                          marginTop: 25,
                           backgroundColor: "#6A5AE0",
                         }}
                         onPress={() => navigation.navigate("AllLeaderboard", { gameid: res?._id, noOfQue: res?.noOfQuestion })}
