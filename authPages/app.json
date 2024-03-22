@@ -4,6 +4,11 @@
     "slug": "authPages",
     "android": {
       "package": "com.harsh1600.authPages"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "9a7c417f-872b-477a-9422-dae474aaf143"
+      }
     }
   }
 }

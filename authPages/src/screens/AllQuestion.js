@@ -19,6 +19,7 @@ const AllQuestion = (props) => {
 
     const gameId = route.params?.gameId || null;
     const noOfQue = route.params?.noOfQue || null;
+    const userId = route.params?.id || null
 
     const [selectedQueNo, setSelectedQueNo] = useState(1)
     const [select, setSelect] = useState('')
@@ -28,8 +29,8 @@ const AllQuestion = (props) => {
 
 
     useEffect(() => {
-        dispatch(winnersListPageAllDataOfAUserForParticularExam({ gameId, que_no: selectedQueNo }))
-    }, [dispatch, selectedQueNo])
+        dispatch(winnersListPageAllDataOfAUserForParticularExam({ gameId, que_no: selectedQueNo, userId }))
+    }, [dispatch, selectedQueNo, userId])
 
     const renderButtons = () => {
         const buttons = [];
@@ -69,8 +70,10 @@ const AllQuestion = (props) => {
     };
 
     const pieChartWidth = 150;
-    const series2 = [`${winnersListPageAllDataOfAUserForParticularExamData?.correctPercnt}`, `${winnersListPageAllDataOfAUserForParticularExamData?.wrongPercnt}`];
+    const series2 = [`${winnersListPageAllDataOfAUserForParticularExamData?.correctPercentage}`, `${winnersListPageAllDataOfAUserForParticularExamData?.wrongPercentage}`];
     const sliceColor2 = ['#0085FF', '#A8A8A8'];
+
+    // console.log(winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion)
 
     return (
         <SafeAreaView>
@@ -101,17 +104,36 @@ const AllQuestion = (props) => {
 
                 <View style={{ height: responsiveHeight(32), width: responsiveWidth(90), marginBottom: 10, paddingHorizontal: 20, backgroundColor: '#fff', alignSelf: 'center', marginTop: 10, borderRadius: 8, elevation: 10 }}>
                     <Text style={{ marginTop: 20, fontSize: 17, fontWeight: '500', color: '#000' }}>Q. {winnersListPageAllDataOfAUserForParticularExamData?.question}</Text>
-                    {winnersListPageAllDataOfAUserForParticularExamData?.options?.map((res) => {
+                    {winnersListPageAllDataOfAUserForParticularExamData?.options?.map((res, index) => {
                         return (
                             <>
-                                <View style={{ marginTop: 10, flexDirection: 'row', marginRight: 20 }}>
-                                    <TouchableOpacity style={{ height: responsiveHeight(3.5), marginRight: 10, backgroundColor: select == 0 ? '#6A5AE0' : '#fff', width: responsiveWidth(7), borderWidth: 1, borderRadius: 100, justifyContent: 'center' }}
+                                <View key={index} style={{ marginTop: 10, flexDirection: 'row', marginRight: 20 }}>
+                                    <TouchableOpacity style={{
+                                        height: responsiveHeight(3.5), marginRight: 10,
+                                        backgroundColor:
+                                            res.id === winnersListPageAllDataOfAUserForParticularExamData?.answer
+                                                ? 'green' // Real answer shown in green
+                                                : winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.answer === res.id
+                                                    ? 'red' // Wrong answer given, option turns red
+                                                    : select === res.id // If option is selected
+                                                        ? '#0085FF' // Blueish color
+                                                        : '#6A5AE0', // All other options in blueish color
+                                        width: responsiveWidth(7), borderWidth: 1, borderRadius: 100, justifyContent: 'center'
+                                    }}
                                         onPress={() => setSelect(0)}>
                                         <Text style={{ alignSelf: 'center', fontWeight: '600', fontSize: 18, color: select == 0 ? '#fff' : '#6A5AE0' }}>{res.id}</Text>
                                     </TouchableOpacity>
 
-                                    <Text style={{ alignSelf: 'center', fontSize: 13 }}>{res?.answer}</Text>
-
+                                    <Text style={{
+                                        alignSelf: 'center', fontSize: 13, color:
+                                            res.id === winnersListPageAllDataOfAUserForParticularExamData?.answer
+                                                ? 'green' // Real answer shown in green
+                                                : winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.answer === res.id
+                                                    ? 'red' // Wrong answer given, text turns red
+                                                    : '#000000' // All other text colors
+                                    }}>
+                                        {res?.answer}
+                                    </Text>
                                 </View>
                             </>
                         )
@@ -244,7 +266,7 @@ const AllQuestion = (props) => {
                                 style={{
                                     height: responsiveHeight(3),
                                     justifyContent: "center",
-                                    backgroundColor: winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.rC === index ? "#000" : "#fff",
+                                    backgroundColor: winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.rC === index && !(winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.answer === 5) ? "#000" : "#fff",
                                     width: responsiveWidth(6),
                                     borderWidth: 1,
                                     borderRadius: 5,
@@ -256,7 +278,7 @@ const AllQuestion = (props) => {
                                         alignSelf: "center",
                                         fontWeight: "600",
                                         fontSize: 15,
-                                        color: winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.rC === index ? "#fff" : "#000",
+                                        color: winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.rC === index && !(winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.answer === 5) ? "#fff" : "#000",
                                     }}
                                 >
                                     {option}
@@ -306,6 +328,7 @@ const AllQuestion = (props) => {
                                     fontSize: 15,
                                     alignSelf: "center",
                                     marginTop: 5,
+                                    color: "#0085FF"
                                 }}
                             >
                                 {winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.rM}
@@ -320,6 +343,7 @@ const AllQuestion = (props) => {
                                     fontSize: 15,
                                     alignSelf: "center",
                                     marginTop: 5,
+                                    color: "#0085FF"
                                 }}
                             >
                                 {winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.rC}
@@ -391,9 +415,10 @@ const AllQuestion = (props) => {
                                     alignSelf: "center",
                                     fontWeight: "600",
                                     fontSize: 15,
+                                    color: "#0085FF"
                                 }}
                             >
-                                {winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.rawPoints}
+                                {winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.rMrC}
                             </Text>
                         </TouchableOpacity>
 
@@ -433,7 +458,7 @@ const AllQuestion = (props) => {
                                     fontSize: 15,
                                 }}
                             >
-                                {winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.timeTaken}
+                                {winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.t_m_Points}
                             </Text>
 
                         </TouchableOpacity>
@@ -462,7 +487,7 @@ const AllQuestion = (props) => {
                     >
                         <Text
                             style={{ alignSelf: "center", fontWeight: "600", fontSize: 15 }}
-                        >9</Text>
+                        > {winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.rawPoints}</Text>
                     </TouchableOpacity>
                 </View>
 
@@ -470,20 +495,43 @@ const AllQuestion = (props) => {
                 <View style={{ height: responsiveHeight(95), elevation: 10, marginBottom: '10%', marginTop: 20, width: responsiveWidth(90), borderRadius: 10, backgroundColor: '#fff', alignSelf: 'center' }}>
                     <Text style={{ alignSelf: 'center', fontSize: 20, marginTop: 10, fontWeight: '500' }}>Answer Analysis</Text>
 
-                    <View style={{ height: responsiveHeight(10), elevation: 10, marginTop: 20, width: responsiveWidth(90), borderRadius: 10, backgroundColor: '#fff', alignSelf: 'center' }}>
+                    <View style={{ height: responsiveHeight(13), elevation: 10, marginTop: 20, width: responsiveWidth(90), borderRadius: 10, backgroundColor: '#fff', alignSelf: 'center' }}>
 
                         <View style={{ flexDirection: 'row', justifyContent: 'flex-start' }}>
                             <Text style={{ fontSize: 15, marginTop: 10, marginHorizontal: 20 }}>Correct Answer : -</Text>
-                            <View style={{ alignSelf: 'center', marginTop: 10, height: responsiveHeight(3), width: responsiveWidth(7), borderWidth: 0.5, borderRadius: 5 }}>
+                            <View style={{ alignSelf: 'center', marginTop: 10, height: responsiveHeight(3), width: responsiveWidth(9), borderWidth: 0.5, borderRadius: 5 }}>
                                 <Text style={{ alignSelf: 'center' }}>{winnersListPageAllDataOfAUserForParticularExamData?.answer}</Text>
                             </View>
                         </View>
 
                         <View style={{ flexDirection: 'row', justifyContent: 'flex-start' }}>
                             <Text style={{ fontSize: 15, marginTop: 10, marginHorizontal: 20 }}>Your Answer      : -</Text>
-                            <View style={{ alignSelf: 'center', marginTop: 10, height: responsiveHeight(3), width: responsiveWidth(7), borderWidth: 0.5, borderRadius: 5 }}>
-                                <Text style={{ alignSelf: 'center' }}>{winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.answer}</Text>
+                            <View style={{ alignSelf: 'center', marginTop: 10, height: responsiveHeight(3), width: responsiveWidth(9), borderWidth: 0.5, borderRadius: 5 }}>
+                                <Text style={{ alignSelf: 'center' }}>{winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.answer === 5 ? "None" : winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.answer}</Text>
                             </View>
+
+                        </View>
+                        <View style={{ flexDirection: 'row', justifyContent: 'flex-start' }}>
+                            <Text style={{
+                                fontSize: 15,
+                                marginTop: 10,
+                                marginHorizontal: 20,
+                                color:
+                                    winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.answer === 5
+                                        ? "#0085FF" // If skipped, set color to blue
+                                        : winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.answer === winnersListPageAllDataOfAUserForParticularExamData?.answer
+                                            ? "green" // If right, set color to green
+                                            : "red" // If wrong, set color to red
+                            }}>
+                                {
+                                    winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.answer === 5
+                                        ? "-----> No answer Given"
+                                        : (winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.answer === winnersListPageAllDataOfAUserForParticularExamData?.answer)
+                                            ? "-----> Your Answer is Right"
+                                            : "-----> Your Answer is Wrong"
+                                }
+                            </Text>
+
                         </View>
                     </View>
 
@@ -529,6 +577,7 @@ const AllQuestion = (props) => {
                                         fontSize: 15,
                                         alignSelf: "center",
                                         marginTop: 5,
+                                        color: "#0085FF"
                                     }}
                                 >
                                     {winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.mM}
@@ -543,6 +592,7 @@ const AllQuestion = (props) => {
                                         fontSize: 15,
                                         alignSelf: "center",
                                         marginTop: 5,
+                                        color: "#0085FF"
                                     }}
                                 >
                                     {winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.mC}
@@ -560,6 +610,7 @@ const AllQuestion = (props) => {
                                         fontSize: 15,
                                         alignSelf: "center",
                                         marginTop: 5,
+                                        color: "#0085FF"
                                     }}
                                 >
                                     {winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.timeTaken}
@@ -575,7 +626,9 @@ const AllQuestion = (props) => {
                                         marginTop: 5,
                                     }}
                                 >
-                                    {(winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.mC) + (winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.timeTaken)}
+                                    {isNaN(winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.mC) || isNaN(winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.timeTaken)
+                                        ? "0"
+                                        : (winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.mC + winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.timeTaken)}
                                 </Text>
                             </View>
                         </View>
@@ -632,9 +685,10 @@ const AllQuestion = (props) => {
                                         alignSelf: "center",
                                         fontWeight: "600",
                                         fontSize: 15,
+                                        color: "#0085FF"
                                     }}
                                 >
-                                    {(winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.mM) + (winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.mC) + (winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.timeTaken)}
+                                    {(winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.t_MPoints)}
 
                                 </Text>
                             </TouchableOpacity>
@@ -675,7 +729,7 @@ const AllQuestion = (props) => {
                                         fontSize: 15,
                                     }}
                                 >
-                                    {(winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.mC) + (winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.timeTaken)}
+                                    {(winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.t_m_Points)}
                                 </Text>
 
                             </TouchableOpacity>
@@ -728,26 +782,26 @@ const AllQuestion = (props) => {
                         </View>
 
                         {
-                            winnersListPageAllDataOfAUserForParticularExamData?.correctPercnt <= winnersListPageAllDataOfAUserForParticularExamData?.wrongPercnt ? (
+                            winnersListPageAllDataOfAUserForParticularExamData?.correctPercentage <= winnersListPageAllDataOfAUserForParticularExamData?.wrongPercentage ? (
 
-                                <Text style={{ fontSize: 14, position: 'absolute', color: '#000', fontWeight: '500', top: '20%', right: '33%' }}>{((winnersListPageAllDataOfAUserForParticularExamData?.correctPercnt) / (winnersListPageAllDataOfAUserForParticularExamData?.wrongPercnt + winnersListPageAllDataOfAUserForParticularExamData?.correctPercnt) * 100).toFixed(1)}%</Text>
+                                <Text style={{ fontSize: 14, position: 'absolute', color: '#000', fontWeight: '500', top: '20%', right: '33%' }}>{(((winnersListPageAllDataOfAUserForParticularExamData?.correctPercentage >= 1) && winnersListPageAllDataOfAUserForParticularExamData?.correctPercentage.toFixed(2) + "%"))}</Text>
                             ) :
                                 (
                                     <>
-                                        <Text style={{ fontSize: 14, position: 'absolute', color: '#000', fontWeight: '500', top: '20%', right: '33%' }}>{((winnersListPageAllDataOfAUserForParticularExamData?.correctPercnt) / (winnersListPageAllDataOfAUserForParticularExamData?.wrongPercnt + winnersListPageAllDataOfAUserForParticularExamData?.correctPercnt) * 100).toFixed(1)}%</Text>
+                                        <Text style={{ fontSize: 14, position: 'absolute', color: '#000', fontWeight: '500', top: '20%', right: '33%' }}>{(((winnersListPageAllDataOfAUserForParticularExamData?.correctPercentage >= 1) && winnersListPageAllDataOfAUserForParticularExamData?.correctPercentage.toFixed(2) + "%"))}</Text>
                                     </>
                                 )
                         }
 
                         {
-                            winnersListPageAllDataOfAUserForParticularExamData?.correctPercnt >= winnersListPageAllDataOfAUserForParticularExamData?.wrongPercnt ? (
-                                <Text style={{ fontSize: 14, position: 'absolute', top: '20%', fontWeight: '500', right: '54%', color: '#0085FF' }}>{((winnersListPageAllDataOfAUserForParticularExamData?.wrongPercnt) / (winnersListPageAllDataOfAUserForParticularExamData?.wrongPercnt + winnersListPageAllDataOfAUserForParticularExamData?.correctPercnt) * 100).toFixed(1)}%
+                            winnersListPageAllDataOfAUserForParticularExamData?.correctPercentage >= winnersListPageAllDataOfAUserForParticularExamData?.wrongPercentage ? (
+                                <Text style={{ fontSize: 14, position: 'absolute', top: '20%', fontWeight: '500', right: '54%', color: '#000' }}>{(((winnersListPageAllDataOfAUserForParticularExamData?.wrongPercentage >= 1) && winnersListPageAllDataOfAUserForParticularExamData?.wrongPercentage.toFixed(2) + "%"))}
 
                                 </Text>
                             ) :
                                 (
                                     <>
-                                        <Text style={{ fontSize: 14, position: 'absolute', top: '20%', fontWeight: '500', right: '54%', color: '#0085FF' }}>{((winnersListPageAllDataOfAUserForParticularExamData?.wrongPercnt) / (winnersListPageAllDataOfAUserForParticularExamData?.wrongPercnt + winnersListPageAllDataOfAUserForParticularExamData?.correctPercnt) * 100).toFixed(1)}%
+                                        <Text style={{ fontSize: 14, position: 'absolute', top: '20%', fontWeight: '500', right: '54%', color: '#000' }}>{(((winnersListPageAllDataOfAUserForParticularExamData?.wrongPercentage >= 1) && winnersListPageAllDataOfAUserForParticularExamData?.wrongPercentage.toFixed(2) + "%"))}
 
                                         </Text>
                                     </>
@@ -766,7 +820,7 @@ const AllQuestion = (props) => {
 
                                     </View>
 
-                                    <Text style={{ fontSize: 13, marginRight: 10, marginLeft: 10 }}>{winnersListPageAllDataOfAUserForParticularExamData?.correctPercnt} Correct</Text>
+                                    <Text style={{ fontSize: 13, marginRight: 10, marginLeft: 10 }}>{winnersListPageAllDataOfAUserForParticularExamData?.correctCount} Correct</Text>
                                 </View>
                             </View>
 
@@ -775,7 +829,7 @@ const AllQuestion = (props) => {
 
                                 </View>
 
-                                <Text style={{ fontSize: 13, marginLeft: 10 }}>{winnersListPageAllDataOfAUserForParticularExamData?.wrongPercnt} Incorrect</Text>
+                                <Text style={{ fontSize: 13, marginLeft: 10 }}>{winnersListPageAllDataOfAUserForParticularExamData?.wrongCount} Incorrect</Text>
                             </View>
 
 

@@ -37,19 +37,23 @@ const Instruction = ({ route, navigation }) => {
                 userId: userId
             };
             socket.emit('joinGame', joinGameData);
+            console.log(JSON.stringify(joinGameData))
 
-            socket.on('message', (data) => {
-                console.log("Message serve", data);
+            // socket.on('message', (data) => {
+            //     console.log("Message serve", data);
+            // });
+            socket.on('get-joinGame', (data) => {
+                console.log("Message Join", data);
             });
 
-            socket.on('get-question', async (questionData) => {
-                try {
-                    console.log('Received question from the server', JSON.stringify(questionData));
-                    navigation.navigate('MyLeaderBoard2', { selectedQuestionLanguage: chooseLanguage, questionData: questionData, t: questionData.t, gameId: questionData.gameId, quid: questionData._id, no_qu: questionData.noOfQuestion, userId: userId });
-                } catch (error) {
-                    console.log(error);
-                }
-            });
+            // socket.on('get-question', async (questionData) => {
+            //     try {
+            //         console.log('Received question from the server', JSON.stringify(questionData));
+            //         // navigation.navigate('MyLeaderBoard2', { examScheduleTime: scheduleTime, selectedQuestionLanguage: chooseLanguage, questionData: questionData, t: questionData.t, gameId: questionData.gameId, quid: questionData._id, no_qu: questionData.noOfQuestion, userId: userId });
+            //     } catch (error) {
+            //         console.log(error);
+            //     }
+            // });
         };
 
         connectSocket();
@@ -57,9 +61,9 @@ const Instruction = ({ route, navigation }) => {
         return () => {
             socket.off('connect');
             socket.off('message');
-            socket.off('get-question');
+            // socket.off('get-question');
         };
-    }, [gameId, userId]);
+    }, [gameId, userId, chooseLanguage]);
 
 
 
@@ -79,13 +83,20 @@ const Instruction = ({ route, navigation }) => {
             // Check if remaining time is zero
             if (remainingTime.minutes === 0 && remainingTime.seconds === 0) {
                 clearInterval(interval);
+                navigation.navigate('MyLeaderBoard2', {
+                    examScheduleTime: scheduleTime,
+                    selectedQuestionLanguage: chooseLanguage,
+                    questionData: null, // No question data initially
+                    gameId,
+                    userId
+                });
             }
         }, 1000);
 
         return () => clearInterval(interval);
-    }, []);
+    }, [chooseLanguage]);
 
-    // console.log("getGameLanguageData", getGameLanguageData)
+    console.log("choose", chooseLanguage)
     return (
         <View style={{ flex: 1, backgroundColor: "#fff" }}>
             <View

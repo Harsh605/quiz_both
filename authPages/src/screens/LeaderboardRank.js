@@ -31,7 +31,7 @@ const LeaderboardRank = ({ navigation, props }) => {
 
   const noOfQue = route.params?.QuestionNo || null;
 
-  console.log(noOfQue,"noOfQuenoOfQue");
+  console.log(noOfQue, "noOfQuenoOfQue");
 
   const [mydata, setMydata] = useState([])
   const [filterText, setFilterText] = useState("");
@@ -254,10 +254,11 @@ const LeaderboardRank = ({ navigation, props }) => {
         </View>
 
         {
-          mydata?.map((res) => {
+          mydata?.map((res, index) => {
             return (
               <>
                 <TouchableOpacity
+                  key={index}
                   style={{
                     flexDirection: "row",
                     justifyContent: "space-between",
@@ -269,7 +270,7 @@ const LeaderboardRank = ({ navigation, props }) => {
                     backgroundColor: "#EDEAFB",
                     alignSelf: "center",
                   }}
-                  onPress={() => navigation.navigate("AllQuestion", { id: (res.User[0].id),queNo:noOfQue })}
+                  onPress={() => navigation.navigate("AllQuestion", { id: (res.User[0].id), queNo: noOfQue })}
                 >
                   <Text style={{ alignSelf: "center", color: "#6A5AE0", flex: 0.25 }}>{res?.rank}</Text>
                   <Text style={{ alignSelf: "center", color: "#000", flex: 0.25 }}>{res.User[0].name}</Text>

@@ -11,7 +11,7 @@ import { winnersListPageAllDataOfAUserForParticularExam } from '../../slices/exa
 
 
 
-const AllLeaderboard = ({ navigation, route }) => {
+const MyQuesInPercentage = ({ navigation, route }) => {
     const dispatch = useDispatch()
 
     const [selectedQueNo, setSelectedQueNo] = useState(1)
@@ -144,7 +144,7 @@ const AllLeaderboard = ({ navigation, route }) => {
                         <AntDesign name="arrowleft" size={24} color="white" />
                     </TouchableOpacity>
 
-                    <Text style={{ color: '#fff', fontSize: 20, fontWeight: '500', alignSelf: 'center', marginTop: 15, marginLeft: '26%' }}>Leaderboard</Text>
+                    <Text style={{ color: '#fff', fontSize: 20, fontWeight: '500', alignSelf: 'center', marginTop: 15, marginLeft: '26%' }}>Correct Percentage</Text>
                 </View>
             </View>
 
@@ -165,7 +165,7 @@ const AllLeaderboard = ({ navigation, route }) => {
                     {winnersListPageAllDataOfAUserForParticularExamData?.options?.map((res, index) => {
                         return (
                             <>
-                                 <View key={index} style={{ marginTop: 10, flexDirection: 'row', marginRight: 20 }}>
+                                <View key={index} style={{ marginTop: 10, flexDirection: 'row', marginRight: 20 }}>
                                     <TouchableOpacity style={{
                                         height: responsiveHeight(3.5), marginRight: 10,
                                         backgroundColor:
@@ -440,7 +440,7 @@ const AllLeaderboard = ({ navigation, route }) => {
                         {
 
                             //  // Sort by rank
-                            searchFilteredData?.sort((a, b) => a?.rank - b?.rank).map((item, index) => {
+                            searchFilteredData?.filter(item => item.isCorrect === true).sort((a, b) => a?.rank - b?.rank).map((item, index) => {
                                 console.log(item, "myitem");
                                 return (
                                     <>
@@ -468,4 +468,4 @@ const AllLeaderboard = ({ navigation, route }) => {
     )
 }
 
-export default AllLeaderboard
+export default MyQuesInPercentage

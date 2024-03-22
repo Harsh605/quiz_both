@@ -23,7 +23,7 @@ import Instruction from "./src/screens/Instruction";
 import MyLeaderBoard from "./src/screens/MyLeaderBoard";
 import ExamLeaderboard from "./src/screens/ExamLeaderboard";
 import Dummy from "./src/screens/Dummy";
-import sc1 from "./src/screens/sc1";
+import Sc1 from "./src/screens/Sc1";
 import Scc from "./src/screens/Scc";
 import Percentage from "./src/screens/Percentage";
 import AllLeaderRank from "./src/screens/AllLeaderRank";
@@ -42,7 +42,6 @@ import Policy from "./src/screens/Policy";
 import TermCondition from "./src/screens/TermCondition";
 import Refund from "./src/screens/Refund";
 import Feedback from "./src/screens/Feedback";
-import kkk from "./src/screens/kkk";
 import Help from "./src/screens/Help";
 import Introduction from "./src/screens/Introduction";
 import AllQuestion from "./src/screens/AllQuestion";
@@ -56,6 +55,8 @@ import MyQuestions from "./src/screens/MyQuestions";
 import Successful from "./src/screens/Successful";
 import { myProfile } from "./slices/userSlice";
 import MyLeaderBoard2 from "./src/screens/MyLeaderBoard2";
+import Kkk from "./src/screens/Kkk";
+import MyQuesInPercentage from "./src/screens/MyQuesInPercentage";
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -74,7 +75,7 @@ function Stacks() {
       <Stack.Navigator initialRouteName="Welcome">
         <Stack.Screen
           name="kkk"
-          component={kkk}
+          component={Kkk}
           options={{ headerShown: false }}
         />
         <Stack.Screen
@@ -173,8 +174,8 @@ function Stacks() {
           options={{ headerShown: false }}
         />
         <Stack.Screen
-          name="sc1"
-          component={sc1}
+          name="Sc1"
+          component={Sc1}
           options={{ headerShown: false }}
         />
         <Stack.Screen
@@ -195,6 +196,11 @@ function Stacks() {
         <Stack.Screen
           name="AllLeaderboard"
           component={AllLeaderboard}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="MyQuesInPercentage"
+          component={MyQuesInPercentage}
           options={{ headerShown: false }}
         />
         <Stack.Screen

@@ -178,7 +178,7 @@ const MyBalance = ({ navigation }) => {
                 })
                 .catch(error => console.log('erasror', error), setIndicator2(false));
 
-            
+
         } catch (error) {
             console.log(error, "rtrt");
 
@@ -329,6 +329,17 @@ const MyBalance = ({ navigation }) => {
 
                 </View>
                 <Text style={{ marginHorizontal: 20, marginTop: 5, color: '#000', fontSize: 20, fontWeight: '500' }}>₹ {data?.discount_bonus}</Text>
+
+            </View>
+            <View style={{ borderBottomWidth: 0.4, marginHorizontal: 20, marginTop: 20, borderColor: '#8A8A8A' }}></View>
+
+            <View>
+                <View style={{ flexDirection: 'row', marginTop: 15, justifyContent: 'flex-start', marginHorizontal: 20 }}>
+                    <Text style={{ alignSelf: 'center', color: '#8A8A8A', fontSize: 17, fontWeight: '500' }}>Referral Amount</Text>
+                    <Image source={require('../images/i.png')} style={{ height: responsiveHeight(2.1), width: responsiveWidth(4.3), alignSelf: 'center', marginLeft: 5 }} />
+
+                </View>
+                <Text style={{ marginHorizontal: 20, marginTop: 5, color: '#000', fontSize: 20, fontWeight: '500' }}>₹ {data?.ref_amount}</Text>
 
             </View>
 

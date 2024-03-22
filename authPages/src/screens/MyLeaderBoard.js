@@ -528,10 +528,11 @@ const MyLeaderBoard = ({ navigation, route }) => {
           </Text>
 
           {
-            opsion?.map((res) => {
+            opsion?.map((res, index) => {
               return (
                 <>
                   <View
+                    key={index}
                     style={{ marginTop: 10, flexDirection: "row", marginRight: 20 }}
                   >
                     <TouchableOpacity
@@ -1661,11 +1662,12 @@ const MyLeaderBoard = ({ navigation, route }) => {
               </View>
 
               {
-                leaderBoardModalData?.map((res) => {
+                leaderBoardModalData?.map((res, index) => {
                   // console.log(res);
                   return (
                     <>
                       <TouchableOpacity
+                        key={index}
                         style={{
                           flexDirection: "row",
                           justifyContent: "space-between",
@@ -1730,10 +1732,10 @@ const MyLeaderBoard = ({ navigation, route }) => {
             <View style={{ height: responsiveHeight(32), width: responsiveWidth(90), marginBottom: 10, paddingHorizontal: 20, backgroundColor: '#fff', alignSelf: 'center', marginTop: 10, borderRadius: 8, elevation: 10 }}>
               <Text style={{ marginTop: 20, fontSize: 17, fontWeight: '500', color: '#000' }}>Q. {mydata}</Text>
 
-              {question1?.map((res) => {
+              {question1?.map((res, index) => {
                 return (
                   <>
-                    <View style={{ marginTop: 10, flexDirection: 'row', marginRight: 20 }}>
+                    <View key={index} style={{ marginTop: 10, flexDirection: 'row', marginRight: 20 }}>
                       <TouchableOpacity style={{ height: responsiveHeight(3.5), marginRight: 10, backgroundColor: select2 == 0 ? '#6A5AE0' : '#fff', width: responsiveWidth(7), borderWidth: 1, borderRadius: 100, justifyContent: 'center' }}
                         onPress={() => setSelect2(0)}>
                         <Text style={{ alignSelf: 'center', fontWeight: '600', fontSize: 18, color: select2 == 0 ? '#fff' : '#6A5AE0' }}>{res.id}</Text>
@@ -2152,6 +2154,7 @@ const MyLeaderBoard = ({ navigation, route }) => {
                       fontSize: 15,
                       alignSelf: "center",
                       marginTop: 5,
+                      color:"#0085FF"
                     }}
                   >
                     {rowdata.rM}
@@ -2166,6 +2169,7 @@ const MyLeaderBoard = ({ navigation, route }) => {
                       fontSize: 15,
                       alignSelf: "center",
                       marginTop: 5,
+                      color:"#0085FF"
                     }}
                   >
                     {rowdata.rC}
@@ -2237,6 +2241,7 @@ const MyLeaderBoard = ({ navigation, route }) => {
                       alignSelf: "center",
                       fontWeight: "600",
                       fontSize: 15,
+                      color:"#0085FF"
                     }}
                   >
                     {rowdata.rawPoints}

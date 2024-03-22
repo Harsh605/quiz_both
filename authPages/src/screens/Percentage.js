@@ -9,6 +9,7 @@ import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 import { correctPercentPageAllExams } from "../../slices/examSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { convertMillisecondsToDateTime } from "../utils/FormateTime";
 
 
 const Percentage = ({ navigation }) => {
@@ -26,8 +27,21 @@ const Percentage = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
-    dispatch(correctPercentPageAllExams({ name: filterText }))
+    const fetchData = () => {
+      // Dispatch your action to fetch data from the API
+       dispatch(correctPercentPageAllExams({ name: filterText }));
+    };
+
+    // Fetch data immediately when the component mounts
+    fetchData();
+
+    // Set interval to fetch data every 2 minutes
+    const intervalId = setInterval(fetchData, 1 * 60 * 1000); // 2 minutes
+
+    // Clean up function to clear the interval when the component unmounts
+    return () => clearInterval(intervalId);
   }, [dispatch, filterText]);
+
 
   return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
@@ -52,7 +66,7 @@ const Percentage = ({ navigation }) => {
             marginTop: 50,
           }}
         >
-          <Topbar />
+          <Topbar navigation={navigation} />
         </View>
 
         <Navbar navigation={navigation} />
@@ -141,12 +155,14 @@ const Percentage = ({ navigation }) => {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }>
 
-          {
-            correctPercentPageAllExamsData?.map((res) => {
-              console.log(res, "percentress");
-              return (
-                <>
+
+          {correctPercentPageAllExamsData?.length > 0 &&
+            [...correctPercentPageAllExamsData].sort((a, b) => new Date(b.schedule) - new Date(a.schedule))
+              .map((res, index) => {
+                console.log(res, "percentress");
+                return (
                   <View
+                    key={index}
                     style={{
                       height: responsiveHeight(45),
                       width: responsiveWidth(90),
@@ -177,7 +193,7 @@ const Percentage = ({ navigation }) => {
                         marginTop: 5,
                       }}
                     >
-                      Rank : #{res.rank}
+                      Rank: {res?.UserGame[0]?.rank}
                     </Text>
 
                     <View style={{ borderBottomWidth: 0.6, marginTop: 10 }}></View>
@@ -199,7 +215,7 @@ const Percentage = ({ navigation }) => {
                       />
 
                       <Text style={{ alignSelf: "center", marginLeft: 10, fontSize: 13 }}>
-                        {new Date(res.schedule * 1000).toDateString()}
+                        {convertMillisecondsToDateTime(res?.schedule)}
                       </Text>
                     </View>
 
@@ -308,7 +324,7 @@ const Percentage = ({ navigation }) => {
                           marginTop: 25,
                           backgroundColor: "#6A5AE0",
                         }}
-                        onPress={() => navigation.navigate("AllLeaderboard", { gameid: res?._id, noOfQue: res?.noOfQuestion })}
+                        onPress={() => navigation.navigate("MyQuesInPercentage", { gameid: res?._id, noOfQue: res?.noOfQuestion })}
                       >
                         <Text
                           style={{
@@ -323,9 +339,8 @@ const Percentage = ({ navigation }) => {
                       </TouchableOpacity>
                     </View>
                   </View>
-                </>
-              )
-            })
+                )
+              })
           }
 
         </ScrollView>

@@ -224,27 +224,28 @@ const MyTransaction = ({ navigation }) => {
 
                         </View>
 
+                        <ScrollView showsVerticalScrollIndicator={false}>
+                            {
+                                depositdata?.map((res, index) => {
+                                    return (
 
-                        {
-                            depositdata?.map((res, i) => {
-                                return (
-                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', height: responsiveHeight(8), width: responsiveWidth(90), paddingHorizontal: 10, borderRadius: 2, marginTop: 5, backgroundColor: '#EDEAFB', alignSelf: 'center' }}>
-                                        <Text style={{ alignSelf: 'center', color: '#6A5AE0' }}>{i + 1}</Text>
-                                        <Text style={{ alignSelf: 'center', color: '#000' }}>₹{res.amount}</Text>
-                                        <Text style={{ alignSelf: 'center', color: 'green' }}>#{res._id.toString().substring(0, 4)}...<AntDesign name="copy1" size={18} color="black" onPress={() => { copydata(res._id) }} /></Text>
-                                        <Text style={{ alignSelf: 'center', color: '#000' }}>{res.status}</Text>
+                                        <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', height: responsiveHeight(8), width: responsiveWidth(90), paddingHorizontal: 10, borderRadius: 2, marginTop: 5, backgroundColor: '#EDEAFB', alignSelf: 'center' }}>
+                                            <Text style={{ alignSelf: 'center', color: '#6A5AE0' }}>{index + 1}</Text>
+                                            <Text style={{ alignSelf: 'center', color: '#000' }}>₹{res.amount}</Text>
+                                            <Text style={{ alignSelf: 'center', color: 'green' }}>#{res._id.toString().substring(0, 4)}...<AntDesign name="copy1" size={18} color="black" onPress={() => { copydata(res._id) }} /></Text>
+                                            <Text style={{ alignSelf: 'center', color: '#000' }}>{res.status === 0 ? "Pending" : res.status === 1 ? "Completed" : "Cancelled"}</Text>
 
-                                        <View style={{ alignSelf: 'center' }}>
-                                            <Text style={{ alignSelf: 'center', color: '#000', fontWeight: '400', fontSize: 13 }}>{new Date(res.createdAt).toLocaleDateString()}</Text>
-                                            <Text style={{ alignSelf: 'center', color: '#000', fontWeight: '400', fontSize: 13 }}>{new Date(res.createdAt).toLocaleTimeString()}</Text>
+                                            <View style={{ alignSelf: 'center' }}>
+                                                <Text style={{ alignSelf: 'center', color: '#000', fontWeight: '400', fontSize: 13 }}>{new Date(res.createdAt).toLocaleDateString()}</Text>
+                                                <Text style={{ alignSelf: 'center', color: '#000', fontWeight: '400', fontSize: 13 }}>{new Date(res.createdAt).toLocaleTimeString()}</Text>
+                                            </View>
+
+
                                         </View>
-
-
-                                    </View>
-                                )
-                            })
-                        }
-
+                                    )
+                                })
+                            }
+                        </ScrollView>
 
                     </View>
                 </>
@@ -289,26 +290,27 @@ const MyTransaction = ({ navigation }) => {
                             <Text style={{ alignSelf: 'center', color: '#000', fontWeight: '500' }}>Date&time</Text>
 
                         </View>
+                        <ScrollView showsVerticalScrollIndicator={false}>
+                            {
+                                widrawdata?.map((res, index) => {
+                                    return (
+                                        <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', height: responsiveHeight(8), width: responsiveWidth(90), paddingHorizontal: 10, borderRadius: 2, marginTop: 5, backgroundColor: '#EDEAFB', alignSelf: 'center' }}>
+                                            <Text style={{ alignSelf: 'center', color: '#6A5AE0' }}>{index + 1}</Text>
+                                            <Text style={{ alignSelf: 'center', color: '#000' }}>₹{res.amount}</Text>
+                                            <Text style={{ alignSelf: 'center', color: 'green' }}>#{res._id.toString().substring(0, 4)}...<AntDesign name="copy1" size={18} color="black" onPress={() => { copydata(res._id) }} /></Text>
+                                            <Text style={{ alignSelf: 'center', color: '#000' }}>{res.status === 0 ? "Pending" : res.status === 1 ? "Completed" : "Rejected"}</Text>
 
-                        {
-                            widrawdata?.map((res, i) => {
-                                return (
-                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', height: responsiveHeight(8), width: responsiveWidth(90), paddingHorizontal: 10, borderRadius: 2, marginTop: 5, backgroundColor: '#EDEAFB', alignSelf: 'center' }}>
-                                        <Text style={{ alignSelf: 'center', color: '#6A5AE0' }}>{i + 1}</Text>
-                                        <Text style={{ alignSelf: 'center', color: '#000' }}>₹{res.amount}</Text>
-                                        <Text style={{ alignSelf: 'center', color: 'green' }}>#{res._id.toString().substring(0, 4)}...<AntDesign name="copy1" size={18} color="black" onPress={() => { copydata(res._id) }} /></Text>
-                                        <Text style={{ alignSelf: 'center', color: '#000' }}>{res.status}</Text>
+                                            <View style={{ alignSelf: 'center' }}>
+                                                <Text style={{ alignSelf: 'center', color: '#000', fontWeight: '400', fontSize: 13 }}>{new Date(res.createdAt).toLocaleDateString()}</Text>
+                                                <Text style={{ alignSelf: 'center', color: '#000', fontWeight: '400', fontSize: 13 }}>{new Date(res.createdAt).toLocaleTimeString()}</Text>
+                                            </View>
 
-                                        <View style={{ alignSelf: 'center' }}>
-                                            <Text style={{ alignSelf: 'center', color: '#000', fontWeight: '400', fontSize: 13 }}>{new Date(res.createdAt).toLocaleDateString()}</Text>
-                                            <Text style={{ alignSelf: 'center', color: '#000', fontWeight: '400', fontSize: 13 }}>{new Date(res.createdAt).toLocaleTimeString()}</Text>
+
                                         </View>
-
-
-                                    </View>
-                                )
-                            })
-                        }
+                                    )
+                                })
+                            }
+                        </ScrollView>
 
 
 
@@ -396,30 +398,31 @@ const MyTransaction = ({ navigation }) => {
 
 
                                     </View>
-                                    {quiseRewarddata?.map((res, index) => {
-                                        return (
-                                            <>
-                                                <View style={{ flexDirection: 'row', height: responsiveHeight(9), width: responsiveWidth(95), paddingHorizontal: 10, borderRadius: 2, marginTop: 5, backgroundColor: '#EDEAFB', alignSelf: 'center' }}>
-                                                    <Text style={{ alignSelf: 'center', color: '#6A5AE0', flex: 0.1 }}>{index + 1}</Text>
-                                                    <Text style={{ alignSelf: 'center', color: '#000', flex: 0.4 }}>{res?.gameId.gameNameInEnglish}</Text>
-                                                    <Text style={{ alignSelf: 'center', color: 'green', flex: 0.2, marginRight: 15 }}>₹{res.amount}</Text>
-                                                    <Text style={{ alignSelf: 'center', color: '#000', flex: 0.2 }}>{res?.mainPoints}</Text>
-                                                    <Text style={{ alignSelf: 'center', color: '#000', flex: 0.2 }}>#{res?.rank}</Text>
-                                                    <Text style={{ alignSelf: 'center', color: '#000', flex: 0.2 }}>{res?.wonAmount}</Text>
+                                    <ScrollView showsVerticalScrollIndicator={false}>
+                                        {quiseRewarddata?.map((res, index) => {
+                                            return (
+                                                <>
+                                                    <View key={index} style={{ flexDirection: 'row', height: responsiveHeight(9), width: responsiveWidth(95), paddingHorizontal: 10, borderRadius: 2, marginTop: 5, backgroundColor: '#EDEAFB', alignSelf: 'center' }}>
+                                                        <Text style={{ alignSelf: 'center', color: '#6A5AE0', flex: 0.1 }}>{index + 1}</Text>
+                                                        <Text style={{ alignSelf: 'center', color: '#000', flex: 0.4 }}>{res?.gameId.gameNameInEnglish}</Text>
+                                                        <Text style={{ alignSelf: 'center', color: 'green', flex: 0.2, marginRight: 15 }}>₹{res.amount}</Text>
+                                                        <Text style={{ alignSelf: 'center', color: '#000', flex: 0.2 }}>{res?.mainPoints}</Text>
+                                                        <Text style={{ alignSelf: 'center', color: '#000', flex: 0.2 }}>#{res?.rank}</Text>
+                                                        <Text style={{ alignSelf: 'center', color: '#000', flex: 0.2 }}>{res?.wonAmount}</Text>
 
-                                                    <View style={{ alignSelf: 'center' }}>
-                                                        <Text style={{ alignSelf: 'center', color: '#000', fontWeight: '400', fontSize: 13 }}>{new Date(res?.businessDate).toLocaleDateString()}</Text>
-                                                        <Text style={{ alignSelf: 'center', color: '#000', fontWeight: '400', fontSize: 13 }}>{new Date(res?.businessDate).toLocaleTimeString()}</Text>
+                                                        <View style={{ alignSelf: 'center' }}>
+                                                            <Text style={{ alignSelf: 'center', color: '#000', fontWeight: '400', fontSize: 13 }}>{new Date(res?.businessDate).toLocaleDateString()}</Text>
+                                                            <Text style={{ alignSelf: 'center', color: '#000', fontWeight: '400', fontSize: 13 }}>{new Date(res?.businessDate).toLocaleTimeString()}</Text>
+                                                        </View>
+
+
                                                     </View>
 
+                                                </>
+                                            )
+                                        })}
 
-                                                </View>
-
-                                            </>
-                                        )
-                                    })}
-
-
+                                    </ScrollView>
 
 
                                 </View>
@@ -486,11 +489,11 @@ const MyTransaction = ({ navigation }) => {
                                                 return (
                                                     <>
 
-                                                        <View style={{ flexDirection: 'row', height: responsiveHeight(9), width: responsiveWidth(95), paddingHorizontal: 10, borderRadius: 2, marginTop: 5, backgroundColor: '#EDEAFB', alignSelf: 'center' }}>
+                                                        <View key={index} style={{ flexDirection: 'row', height: responsiveHeight(9), width: responsiveWidth(95), paddingHorizontal: 10, borderRadius: 2, marginTop: 5, backgroundColor: '#EDEAFB', alignSelf: 'center' }}>
                                                             <Text style={{ alignSelf: 'center', color: '#000', flex: 0.2 }}>
                                                                 {index + 1}
                                                             </Text>
-                                                            <Text style={{ alignSelf: 'center', color: '#000', flex: 0.5, marginLeft: 10 }}>{data?.refUserId?.name}</Text>
+                                                            <Text style={{ alignSelf: 'center', color: '#000', flex: 0.5, marginLeft: 10 }}>{data?.userId}</Text>
                                                             <Text style={{ alignSelf: 'center', color: 'green', flex: 0.5, marginLeft: 25 }}>{data?.amount}</Text>
 
 

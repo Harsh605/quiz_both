@@ -1,10 +1,9 @@
 import { View, Text, TouchableOpacity, Image, ScrollView } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { AntDesign } from '@expo/vector-icons';
 import { responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions'
 import { } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { width } from 'deprecated-react-native-prop-types/DeprecatedImagePropType';
 import Share from 'react-native-share';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { base_url } from "./Base_url";
@@ -13,12 +12,14 @@ import { base_url } from "./Base_url";
 
 const ReferEarn = ({ navigation }) => {
 
-  const [refer,setRefer] = useState('')
+  const [refer, setRefer] = useState('')
+  const [sharingLink,setSharingLink] = useState("")
 
   const shareContent = async () => {
     try {
+      const content = `🎉 Hey there! 🎉\n\nJoin me on the ultimate quiz adventure with Pdowin - the most exciting quiz app out there! 🚀\n\nUse my exclusive referral code "${refer}" when signing up to unlock extra rewards and bonuses! 💰\n\nDon't miss out! Download the app now and let's start the fun together! 📲\n\nDownload Pdowin here: ${sharingLink}`;
       const options = {
-        message: `${JSON.stringify(refer)}`,
+        message: content,
         // You can specify more options, such as URL, title, type, etc.
       };
 
@@ -53,19 +54,22 @@ const ReferEarn = ({ navigation }) => {
       fetch(`${base_url}/refer-link`, requestOptions)
         .then(response => response.json())
         .then(result => {
-          if(result.success==true){
-            console.log(result.data)
-            setRefer(result.data)
+          if (result.success == true) {
+            console.log(result.data, "adsasdasd")
+            setSharingLink(result.data.link)
+            setRefer(result.data.refferCode)
           }
         })
         .catch(error => console.log('error', error));
 
     } catch (error) {
-console.log(error,"uuuu");
+      console.log(error, "uuuu");
     }
   }
 
-  // console.log(refer,"refer");
+  useEffect(() => {
+    referApi()
+  }, [])
 
   return (
     <SafeAreaView>
@@ -83,7 +87,7 @@ console.log(error,"uuuu");
         <Image source={require('../images/refer_a_friend.png')} style={{ alignSelf: 'center', height: responsiveHeight(30), width: responsiveWidth(60) }} />
 
         <View style={{ height: responsiveHeight(7), justifyContent: 'center', width: responsiveWidth(40), borderWidth: 1, alignSelf: 'center', borderStyle: 'dashed' }}>
-          <Text style={{ alignSelf: 'center', color: '#6A5AE0', fontSize: 18 }}>SADJK170S</Text>
+          <Text style={{ alignSelf: 'center', color: '#6A5AE0', fontSize: 18 }}>{refer}</Text>
         </View>
 
         <Text style={{ alignSelf: 'center', color: '#8A8A8A', marginTop: 20 }}>Share your code with your friend and get</Text>
@@ -92,7 +96,7 @@ console.log(error,"uuuu");
 
         <TouchableOpacity style={{ height: responsiveHeight(7), width: responsiveWidth(80), marginTop: '12%', backgroundColor: '#6A5AE0', borderRadius: 5, alignSelf: 'center', justifyContent: 'center' }}
           // onPress={shareContent}
-          onPress={() => { referApi(),shareContent() }}
+          onPress={() => { referApi(), shareContent() }}
         >
           <Text style={{ fontSize: 18, color: '#fff', textAlign: 'center', fontFamily: 'Jaldi-Bold' }}>Refer</Text>
         </TouchableOpacity>
@@ -106,24 +110,24 @@ console.log(error,"uuuu");
 
 
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 40, marginTop: 20 }}>
-        <TouchableOpacity  onPress={() => { referApi(),shareContent() }}>
+        <TouchableOpacity onPress={() => { referApi(), shareContent() }}>
           <Image source={require('../images/msg.png')} style={{ height: responsiveHeight(4), width: responsiveWidth(8), alignSelf: 'center' }} />
           <Text>Message</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity  onPress={() => { referApi(),shareContent() }}>
+        <TouchableOpacity onPress={() => { referApi(), shareContent() }}>
           <Image source={require('../images/watsapp.png')} style={{ height: responsiveHeight(4), width: responsiveWidth(8), alignSelf: 'center' }} />
           <Text>WhatsApp</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity  onPress={() => { referApi(),shareContent() }}>
+        <TouchableOpacity onPress={() => { referApi(), shareContent() }}>
           <Image source={require('../images/fb.png')} style={{ height: responsiveHeight(4), width: responsiveWidth(8), alignSelf: 'center' }} />
-          <Text style={{marginTop:1}}>FaceBook</Text>
+          <Text style={{ marginTop: 1 }}>FaceBook</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={()=>{referApi(),shareContent()}} style={{alignSelf:'center',marginTop:-4}}>
+        <TouchableOpacity onPress={() => { referApi(), shareContent() }} style={{ alignSelf: 'center', marginTop: -4 }}>
           <Image source={require('../images/google.png')} style={{ height: responsiveHeight(5), width: responsiveWidth(10), alignSelf: 'center' }} />
-          <Text style={{marginTop:-3}}>Google</Text>
+          <Text style={{ marginTop: -3 }}>Google</Text>
         </TouchableOpacity>
 
 

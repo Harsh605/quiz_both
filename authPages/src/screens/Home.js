@@ -34,7 +34,18 @@ const Home = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
-    dispatch(allOnGoingExams())
+    const fetchData = () => {
+      dispatch(allOnGoingExams())
+    };
+
+    // Fetch data immediately when the component mounts
+    fetchData();
+
+    // Set interval to fetch data every 2 minutes
+    const intervalId = setInterval(fetchData, 1 * 50 * 1000); // 2 minutes
+
+    // Clean up function to clear the interval when the component unmounts
+    return () => clearInterval(intervalId);
   }, [dispatch])
 
   useEffect(() => {
@@ -43,15 +54,15 @@ const Home = ({ navigation }) => {
 
   useEffect(() => {
     dispatch(myProfile())
-  }, [])
+  }, [dispatch])
 
   useEffect(() => {
     onRefresh()
   }, []);
 
 
-  console.log(myProfileData?.user[0].userWallet[0].userId)
-  console.log("allLiveExams", allLiveExams?.upcomingGames[0])
+  // console.log(myProfileData?.user[0].userWallet[0].userId)
+  // console.log("allLiveExams", allLiveExams?.upcomingGames[0])
 
   return (
     <>
@@ -106,37 +117,36 @@ const Home = ({ navigation }) => {
               renderItem={() => {
                 return (
                   <View style={{ flexDirection: "row", flex: 1 }}>
-                    {sliders?.map((data) => {
+                    {sliders?.map((data, index) => {
                       return (
-                        <>
-                          <View
-                            style={{
-                              height: responsiveHeight(10),
-                              width: responsiveWidth(90),
-                              backgroundColor: "white",
-                              alignSelf: "center",
-                              borderRadius: 10,
-                              marginRight: 10,
-                              marginLeft: 18,
-                            }}
-                          >
-                            <TouchableOpacity style={{ flexDirection: "row" }}>
-                              <Image
-                                source={{
-                                  uri: `https://quiz.metablocktechnologies.org/uploads/${data.img}`,
-                                }}
-                                style={{
-                                  backgroungColor: "green",
-                                  height: responsiveHeight(9),
-                                  width: responsiveWidth(90),
-                                  alignSelf: "center",
-                                  borderRadius: 15,
-                                  resizeMode: 'center'
-                                }}
-                              />
-                            </TouchableOpacity>
-                          </View>
-                        </>
+                        <View
+                          key={index}
+                          style={{
+                            height: responsiveHeight(10),
+                            width: responsiveWidth(90),
+                            backgroundColor: "white",
+                            alignSelf: "center",
+                            borderRadius: 10,
+                            marginRight: 10,
+                            marginLeft: 18,
+                          }}
+                        >
+                          <TouchableOpacity style={{ flexDirection: "row" }}>
+                            <Image
+                              source={{
+                                uri: `https://quiz.metablocktechnologies.org/uploads/${data.img}`,
+                              }}
+                              style={{
+                                backgroundColor: "#EDEAFB",
+                                height: responsiveHeight(9),
+                                width: responsiveWidth(90),
+                                alignSelf: "center",
+                                borderRadius: 15,
+                                resizeMode: 'cover'
+                              }}
+                            />
+                          </TouchableOpacity>
+                        </View>
                       );
                     })}
                   </View>
@@ -304,7 +314,7 @@ const Home = ({ navigation }) => {
                           fontSize: 14,
                         }}
                       >
-                        Joined Fees: ₹ {data?.noOfPrice}
+                        Joined Fees: ₹ {data?.entranceAmount}
                       </Text>
                     </View>
 
@@ -320,7 +330,7 @@ const Home = ({ navigation }) => {
 
                       }}
                       disabled={data.UserGame.some(userGame => userGame.userId === myProfileData?.user[0].userWallet[0].userId)}
-                      onPress={() => navigation.navigate("QuizType", { joinedMembers: data?.UserGame.length, amount: data?.noOfPrice, g_idd: data._id, tsedule: data.schedule })}
+                      onPress={() => navigation.navigate("QuizType", { joinedMembers: data?.UserGame.length, amount: data?.entranceAmount, g_idd: data._id, tsedule: data.schedule })}
                     >
                       <Text
                         style={{

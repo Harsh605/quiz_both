@@ -21,92 +21,168 @@ import { useDispatch, useSelector } from "react-redux";
 import { quizPageEachQuestionLeaderBoard } from "../../slices/quizSlice";
 import { winnersListPageAllDataOfAUserForParticularExam } from "../../slices/examSlice";
 
-const MyLeaderBoard2 = ({ navigation, route }) => {
+const MyLeaderBoard3 = ({ navigation, route }) => {
     const dispatch = useDispatch()
-    const socket = useSocket();
-    const { gameId, userId, selectedQuestionLanguage, examScheduleTime } = route.params
 
-    const [questionData, setQuestionData] = useState(null)
+    const { questionData, gameId, userId, selectedQuestionLanguage, examScheduleTime } = route.params
+    const [currentQuestionNo, setCurrentQuestionNo] = useState(1)
+
     const [isQuestionSave, setIsQuestionSave] = useState(false)
-
     const [selectedOption, setSelectedOption] = useState("")
     const [selectedRightOrWrong, setSelectedRightOrWrong] = useState(null)
     const [selectedCorrectPercent, setSelectedCorrectPercent] = useState(null)
     const [answerSubmitTime, setAnswerSubmitTime] = useState(null)
-
-    const [nextQuestionTimer, setNextQuestionTimer] = useState(questionData?.t)
+    const [nextQuestionTimer, setNextQuestionTimer] = useState(questionData.t);
     const [rowPointsValue, setRowPointsValue] = useState(0);
+
     const [remainingTimeAfterSave, setRemainingTimeAfterSave] = useState(0)
-    const [questionIntervalCounter, setQuestionIntervalCounter] = useState(questionData?.interval);
+    const [questionIntervalCounter, setQuestionIntervalCounter] = useState(questionData.interval || 5);
 
     const [modalForLeaderBoard, setModalForLeaderBoard] = useState(false);
     const [modalForAnalysis, setModalForAnalysis] = useState(false);
 
-    const [select, setSelect] = useState('')
 
-
+    const [appState, setAppState] = useState(AppState.currentState);
+    const [appStateTime, setAppStateTime] = useState(new Date());
 
     const { winnersListPageAllDataOfAUserForParticularExamData } = useSelector((state) => state.examCustom)
 
-    const options = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
-    const pieChartWidth = 150;
-    const series2 = [`${winnersListPageAllDataOfAUserForParticularExamData?.correctPercentage}`, `${winnersListPageAllDataOfAUserForParticularExamData?.wrongPercentage}`];
-    const sliceColor2 = ['#0085FF', '#A8A8A8'];
-
+    console.log("selectedQuestionLanguage", selectedQuestionLanguage)
     const eachLeaderBoardFunc = () => {
         setModalForLeaderBoard(true);
-        dispatch(winnersListPageAllDataOfAUserForParticularExam({ gameId, userId, que_no: questionData?.QuestionEnglish.q_no - 1 }))
+        dispatch(winnersListPageAllDataOfAUserForParticularExam({ gameId, que_no: (currentQuestionNo - 1) }))
     };
 
-    const onAnalysisFunc = () => {
-        console.log("Modal.............................................................")
-        setModalForAnalysis(true)
-        dispatch(winnersListPageAllDataOfAUserForParticularExam({ gameId, userId, que_no: questionData?.QuestionEnglish.q_no - 1 }))
 
-    }
+    const options = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+
+    const attempte = {
+        correctPercnt: 75, // Change values as needed
+        wrongPercnt: 25,   // Change values as needed
+    };
+
+    const pieChartWidth = 150;
+    const series2 = [`${attempte?.correctPercnt}`, `${attempte?.wrongPercnt}`];
+    const sliceColor2 = ['#0085FF', '#A8A8A8'];
+
+    // useEffect(() => {
+    //     const timer = setInterval(() => {
+    //         if (nextQuestionTimer <= 0) {
+    //             clearInterval(timer); // Clear the setInterval timer
+    //             if (currentQuestionNo < questionData.noOfQuestion) {
+    //                 let delayDuration;
+    //                 if (isQuestionSave) {
+    //                     delayDuration = questionData?.interval || 5; // Use questionData.interval for saved questions, default to 5 if undefined
+    //                 } else {
+    //                     delayDuration = 5; // Use 5 seconds delay for unsaved questions
+    //                 }
+    //                 setQuestionIntervalCounter(delayDuration); // Reset questionIntervalCounter
+    //                 const intervalTimer = setInterval(() => {
+    //                     console.log(questionIntervalCounter)
+    //                     setQuestionIntervalCounter(prevCounter => prevCounter - 1); // Decrement questionIntervalCounter every second
+    //                 }, 1000);
+    //                 setTimeout(() => {
+    //                     clearInterval(intervalTimer); // Clear intervalTimer when the countdown completes
+    //                     setCurrentQuestionNo(prevQuestionNo => prevQuestionNo + 1);
+    //                     setNextQuestionTimer(questionData.t); // Reset timer for next question
+    //                     setSelectedOption(""); // Reset selected option
+    //                     setSelectedRightOrWrong(null); // Reset selected right or wrong indicator
+    //                     setSelectedCorrectPercent(null);
+    //                     setQuestionIntervalCounter(questionData.interval)
+    //                     setAnswerSubmitTime(null);
+    //                     setIsQuestionSave(false);
+    //                     setModalForLeaderBoard(false)
+    //                     setModalForAnalysis(false)
+    //                 }, delayDuration * 1000);
+    //             }
+    //         } else {
+    //             setNextQuestionTimer(prevTimer => prevTimer - 1); // Decrement nextQuestionTimer
+    //         }
+    //     }, 1000);
+
+    //     return () => clearInterval(timer); // Clear interval on component unmount
+    // }, [nextQuestionTimer, questionData.t, questionData.noOfQuestion, isQuestionSave]); 
+
 
     useEffect(() => {
-        // Listen for incoming questions from the server
-        socket.on('get-question', questionData => {
+        const handleAppStateChange = (nextAppState) => {
+            if (appState.match(/inactive|background/) && nextAppState === 'active') {
+                // App has come back to foreground, update the timer
+                // Calculate the time elapsed since the app went to background
+                const backgroundTime = new Date();
+                const elapsedTimeInBackground = (backgroundTime - appStateTime) / 1000;
 
-            setModalForLeaderBoard(false);
-            setModalForAnalysis(false);
-            setQuestionData(questionData);
-            setNextQuestionTimer(questionData.t); // Reset timer for next question
-            setSelectedOption(""); // Reset selected option
-            setSelectedRightOrWrong(null); // Reset selected right or wrong indicator
-            setSelectedCorrectPercent(null);
-            setQuestionIntervalCounter(questionData.interval)
-            setIsQuestionSave(false);
-        });
+                // Adjust the timer accordingly
+                setNextQuestionTimer(prevTimer => Math.max(prevTimer - elapsedTimeInBackground, 0));
+
+                // Reset the app state time
+                setAppStateTime(new Date());
+            }
+
+            setAppState(nextAppState);
+        };
+
+        const appStateChangeSubscription = AppState.addEventListener('change', handleAppStateChange);
 
         return () => {
-            // Clean up socket listener
-            socket.off('get-question');
+            appStateChangeSubscription.remove();
         };
-    }, []);
+    }, [appState, appStateTime]);
 
     useEffect(() => {
-        const interval = setInterval(() => {
-            if (nextQuestionTimer > 0) {
-                setNextQuestionTimer(prevRemainingTime => prevRemainingTime - 1);
-            } else if (questionIntervalCounter > 0) {
-                // If nextQuestionTimer is 0 or below, and there are remaining intervals, decrement the counter
-                setQuestionIntervalCounter(prevCounter => prevCounter - 1);
-            } else if (questionData && questionData.QuestionEnglish.q_no === questionData.noOfQuestion) {
-                // Stop the timer and show popup if it's the last question
-                clearInterval(interval);
-                setNextQuestionTimer(0); // Ensure timer shows 0
-                navigation.navigate("Successful")
+        const timer = setInterval(() => {
+            if (nextQuestionTimer <= 0) {
+                clearInterval(timer); // Clear the setInterval timer
+                handleNextQuestion(); // Call function to handle next question logic
+            } else {
+                setNextQuestionTimer(prevTimer => prevTimer - 1); // Decrement nextQuestionTimer
             }
         }, 1000);
 
+        return () => clearInterval(timer); // Clear interval on component unmount
+    }, [nextQuestionTimer]);
+
+    const handleNextQuestion = () => {
+        if (currentQuestionNo < questionData.noOfQuestion) {
+            let delayDuration = isQuestionSave ? (questionData?.interval || 5) : 5;
+            setQuestionIntervalCounter(delayDuration); // Reset questionIntervalCounter
+
+            const intervalTimer = setInterval(() => {
+                console.log(questionIntervalCounter);
+                setQuestionIntervalCounter(prevCounter => prevCounter - 1); // Decrement questionIntervalCounter every second
+            }, 1000);
+
+            // Set the delay before starting the next question
+            setTimeout(() => {
+                clearInterval(intervalTimer); // Clear intervalTimer
+                // Increment current question number
+                setCurrentQuestionNo(prevQuestionNo => prevQuestionNo + 1);
+
+                // Reset timer for next question
+                setNextQuestionTimer(questionData.t);
+
+                // Reset selected option, right or wrong indicator, correct percentage, and answer submit time
+                setSelectedOption("");
+                setSelectedRightOrWrong(null);
+                setSelectedCorrectPercent(null);
+                setQuestionIntervalCounter(questionData.interval);
+                setAnswerSubmitTime(null);
+                setIsQuestionSave(false);
+                setModalForLeaderBoard(false);
+                setModalForAnalysis(false);
+            }, delayDuration * 1000);
+        }
+    };
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setRemainingTimeAfterSave(prevRemainingTime => prevRemainingTime - 1);
+        }, 1000);
         return () => clearInterval(interval);
-    }, [nextQuestionTimer, questionIntervalCounter, questionData]);
+    }, []);
 
 
     useEffect(() => {
-        // Calculate and set rowPointsValue based on selectedRightOrWrong, selectedCorrectPercent, and nextQuestionTimer
         const calculateAndSet = () => {
             const newValue = selectedRightOrWrong === "first" ? (
                 (() => {
@@ -132,20 +208,18 @@ const MyLeaderBoard2 = ({ navigation, route }) => {
                 ) :
                     0;
 
-            setRowPointsValue(newValue);
-            console.log("New Row Points Value:", newValue); // Log the updated value for debugging
+            setRowPointsValue(newValue); // Set the calculated value into state
         };
+        calculateAndSet()
+    }, [nextQuestionTimer, selectedCorrectPercent])
 
-        // Call the calculation function whenever any of these dependencies change
-        calculateAndSet();
 
-    }, [selectedRightOrWrong, nextQuestionTimer, selectedCorrectPercent]);
 
 
     const submitQuestionAnswer = ({ answerSubmitTimeSend }) => {
         const socket = io('https://quiz.metablocktechnologies.org');
         setRemainingTimeAfterSave((questionData.t) - answerSubmitTimeSend)
-        if (!selectedRightOrWrong || !selectedOption || !selectedCorrectPercent) {
+        if (!selectedRightOrWrong || !selectedOption) {
             alert("Please Fill All Options");
             return;
         }
@@ -153,21 +227,21 @@ const MyLeaderBoard2 = ({ navigation, route }) => {
         const type = selectedRightOrWrong === "first" ? "RIGHT" : "WRONG";
 
         const currentQuestion = selectedQuestionLanguage === "ENGLISH" ?
-            questionData.QuestionEnglish :
-            questionData.QuestionHindi;
+            questionData.QuestionEnglish[currentQuestionNo - 1] :
+            questionData.QuestionHindi[currentQuestionNo - 1];
 
 
-        const question = selectedQuestionLanguage === "ENGLISH" ? questionData.QuestionEnglish.QuestionE : questionData.QuestionHindi.QuestionH;
+        const question = selectedQuestionLanguage === "ENGLISH" ? questionData.QuestionEnglish[currentQuestionNo - 1].QuestionE : questionData.QuestionHindi[currentQuestionNo - 1].QuestionH;
         console.log({
             questionId: currentQuestion.questionId,
             gameId: gameId,
             userId: userId,
             question: question,
-            q_no: currentQuestion.q_no, // Are you sure this is intended? It seems to be the same as 'question'
+            q_no: currentQuestionNo - 1, // Are you sure this is intended? It seems to be the same as 'question'
             answer: selectedOption,
             q_time: questionData?.t,
             schedule: questionData?.schedule, // Changed the key to avoid duplication
-            rawPoints: rowPointsValue,
+            rawPoints: selectedRightOrWrong === "first" ? 5.5 : selectedRightOrWrong === "second" ? 3.5 : null,
             rM: selectedRightOrWrong === "first" ? 5.5 : selectedRightOrWrong === "second" ? 3.5 : null,
             rC: selectedCorrectPercent,
             timeTaken: answerSubmitTimeSend,
@@ -179,11 +253,11 @@ const MyLeaderBoard2 = ({ navigation, route }) => {
             gameId: gameId,
             userId: userId,
             question: question,
-            q_no: currentQuestion.q_no, // Are you sure this is intended? It seems to be the same as 'question'
+            q_no: currentQuestionNo - 1,
             answer: selectedOption,
             q_time: questionData?.t,
-            schedule: questionData?.schedule, // Changed the key to avoid duplication
-            rawPoints: rowPointsValue,
+            schedule: questionData?.schedule,
+            rawPoints: selectedRightOrWrong === "first" ? 5.5 : selectedRightOrWrong === "second" ? 3.5 : null,
             rM: selectedRightOrWrong === "first" ? 5.5 : selectedRightOrWrong === "second" ? 3.5 : null,
             rC: selectedCorrectPercent,
             timeTaken: answerSubmitTimeSend,
@@ -191,21 +265,15 @@ const MyLeaderBoard2 = ({ navigation, route }) => {
         });
 
 
-        // console.log("setRemainingTimeAfterSave", questionData.t - answerSubmitTimeSend)
-        // console.log("questionData.t", questionData.t)
-        // console.log("answerSubmitTime", answerSubmitTimeSend)
-        // console.log(questionData.interval)
-        console.log(selectedQuestionLanguage,"selectedQuestionLanguage.............................................")
+        console.log("setRemainingTimeAfterSave", questionData.t - answerSubmitTimeSend)
+        console.log("questionData.t", questionData.t)
+        console.log("answerSubmitTime", answerSubmitTimeSend)
+        console.log(questionData.interval)
 
     };
+    // console.log("winnersListPageAllDataOfAUserForParticularExamData", questionData)
 
 
-
-    console.log("questionIntervalCounter", questionIntervalCounter)
-    console.log("nextQuestionTimer", nextQuestionTimer)
-    // console.log("questionData:", questionData)
-    // console.log("questionData:", questionData?.QuestionEnglish?.q_no)
-    // console.log("questionData:", questionData?.QuestionEnglish.QuestionE)
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
@@ -222,7 +290,7 @@ const MyLeaderBoard2 = ({ navigation, route }) => {
                     <View
                         style={{ flexDirection: "row", justifyContent: isQuestionSave ? 'flex-end' : 'space-evenly', }}
                     >
-                        {(questionData?.QuestionEnglish.q_no !== 1 && (nextQuestionTimer < 18 || questionIntervalCounter < 5)) ? (
+                        {(questionIntervalCounter < 5) ? (
                             <TouchableOpacity
                                 style={{
                                     height: responsiveHeight(5),
@@ -270,7 +338,7 @@ const MyLeaderBoard2 = ({ navigation, route }) => {
                                     fontSize: 16,
                                 }}
                             >
-                                {questionData?.QuestionEnglish?.q_no} / {questionData?.noOfQuestion}
+                                {currentQuestionNo} / {questionData.noOfQuestion}
                             </Text>
                         </TouchableOpacity>
                     </View>
@@ -298,13 +366,13 @@ const MyLeaderBoard2 = ({ navigation, route }) => {
                             color: "#000",
                         }}
                     >
-                        Q. {questionData?.QuestionEnglish?.q_no} {selectedQuestionLanguage === "ENGLISH" ?
-                            (questionData?.QuestionEnglish.QuestionE) :
-                            (questionData?.QuestionHindi.QuestionH)}
+                        Q. {currentQuestionNo} {selectedQuestionLanguage === "ENGLISH" ?
+                            (questionData.QuestionEnglish[currentQuestionNo - 1].QuestionE) :
+                            (questionData.QuestionHindi[currentQuestionNo - 1].QuestionH)}
                     </Text>
 
-                    {(selectedQuestionLanguage === "ENGLISH" ? (questionData?.QuestionEnglish.optionH) :
-                        (questionData?.QuestionHindi.optionH))?.map((res, index) => {
+                    {(selectedQuestionLanguage === "ENGLISH" ? (questionData.QuestionEnglish[currentQuestionNo - 1].optionH) :
+                        (questionData.QuestionHindi[currentQuestionNo - 1].optionH))?.map((res, index) => {
                             return (
                                 <>
                                     <View key={index} style={{ marginTop: 10, flexDirection: "row", marginRight: 20 }}>
@@ -343,7 +411,6 @@ const MyLeaderBoard2 = ({ navigation, route }) => {
                     }
 
                 </View>
-
 
                 <View
                     style={{
@@ -429,6 +496,7 @@ const MyLeaderBoard2 = ({ navigation, route }) => {
                         />
                     </View>
                 </View>
+
 
                 <View
                     style={{
@@ -602,6 +670,7 @@ const MyLeaderBoard2 = ({ navigation, route }) => {
                                         marginTop: 5,
                                     }}
                                 >
+                                    {/* {formatTime(nextQuestionTimer)} */}
                                     {nextQuestionTimer}
                                 </Text>
                             </View>
@@ -736,8 +805,7 @@ const MyLeaderBoard2 = ({ navigation, route }) => {
                                 fontSize: 18,
                             }}
                         >
-                            {/* {(!isQuestionSave && nextQuestionTimer > 0) ? "Time" : (!isQuestionSave && nextQuestionTimer < 0) ? "Next Que in.." : `Next Que in..`} */}
-                            {(!isQuestionSave && nextQuestionTimer > 0) ? "Time" : (isQuestionSave && nextQuestionTimer < 0 && questionData?.QuestionEnglish?.q_no !== questionData?.noOfQuestion) ? "Next Que in.." : (!isQuestionSave && questionData?.QuestionEnglish?.q_no === questionData?.noOfQuestion) ? "Exam Ends In.." : (isQuestionSave && questionData?.QuestionEnglish?.q_no === questionData?.noOfQuestion) ? "Exam Ends In.." : `Next Que in..`}
+                            {(!isQuestionSave && nextQuestionTimer > 0) ? "Time" : (!isQuestionSave && nextQuestionTimer < 0) ? "Next Que in.." : `Next Que in..`}
                         </Text>
 
                         <View
@@ -838,7 +906,7 @@ const MyLeaderBoard2 = ({ navigation, route }) => {
                                 : null
                             }
 
-                            {(questionData?.QuestionEnglish.q_no !== 1 && (nextQuestionTimer < 18 || questionIntervalCounter < 5)) ?
+                            {(questionIntervalCounter < 5) ?
                                 <TouchableOpacity
                                     style={{
                                         height: responsiveHeight(5),
@@ -849,8 +917,8 @@ const MyLeaderBoard2 = ({ navigation, route }) => {
                                         width: responsiveWidth(22),
                                         backgroundColor: "#6A5AE0",
                                     }}
-                                    // onPress={() => navigation.navigate("Analysis")}
-                                    onPress={() => onAnalysisFunc()}
+                                // onPress={() => navigation.navigate("Analysis")}
+                                //   onPress={() => { AnalysisApi() }}
                                 >
                                     <Text
                                         style={{
@@ -868,7 +936,6 @@ const MyLeaderBoard2 = ({ navigation, route }) => {
                         </View>
                     </View>
                 </View>
-
 
 
             </ScrollView>
@@ -1067,7 +1134,7 @@ const MyLeaderBoard2 = ({ navigation, route }) => {
                             </View>
 
                             {
-                                winnersListPageAllDataOfAUserForParticularExamData?.questionleaderShip?.sort((a, b) => a?.rank - b?.rank).map((res, index) => {
+                                winnersListPageAllDataOfAUserForParticularExamData?.questionleaderShip?.map((res, index) => {
                                     // console.log(res);
                                     return (
                                         <>
@@ -1086,21 +1153,26 @@ const MyLeaderBoard2 = ({ navigation, route }) => {
                                                 }}
                                             // onPress={() => navigation.navigate("AllQuestion", { id: (res.User[0].id) })}
                                             >
-                                                <Text style={{ alignSelf: "center", color: "#6A5AE0", flex: 0.25 }}>{res?.rank}</Text>
-                                                <Text style={{ alignSelf: "center", color: "#000", flex: 0.25 }}>{res?.User?.name ? res?.User?.name : "-"}</Text>
-                                                <Text style={{ alignSelf: "center", color: "green", flex: 0.25 }}>{res?.User?.id}</Text>
+                                                <Text style={{ alignSelf: "center", color: "#6A5AE0", flex: 0.25 }}>{res?.UserQuestion?.rank}</Text>
+                                                <Text style={{ alignSelf: "center", color: "#000", flex: 0.25 }}>{res.UserQuestion?.User?.name ? res.UserQuestion?.User?.name : "-"}</Text>
+                                                <Text style={{ alignSelf: "center", color: "green", flex: 0.25 }}>{res.UserQuestion?.User?.id}</Text>
 
 
                                                 <Text
                                                     style={{ alignSelf: "center", color: "#000", fontWeight: "500", flex: 0.10 }}
                                                 >
-                                                    {res?.mainPoints}
+                                                    {res?.UserQuestion?.mainPoints}
                                                 </Text>
                                             </TouchableOpacity>
                                         </>
                                     )
                                 })
                             }
+
+
+
+
+
 
                         </View>
 
@@ -1110,62 +1182,40 @@ const MyLeaderBoard2 = ({ navigation, route }) => {
                 </SafeAreaView>
             </Modal>
 
+            {/* 
             <Modal style={{ width: '100%', marginLeft: 0, top: 0, height: responsiveHeight(100), backgroundColor: '#fff' }}
-                visible={modalForAnalysis}
+                visible={modalVisible8}
                 animationType="slide"
-                onRequestClose={() => setModalForAnalysis(false)}
+                onRequestClose={closeModal8}
 
             >
-                <SafeAreaView>
-                    <StatusBar translucent={true} barStyle={'light-content'} backgroundColor={'#6A5AE0'} />
+                <View style={{ top: 0, flex: 1, backgroundColor: '#fff', bottom: 0, height: responsiveHeight(100), marginBottom: -30 }}>
 
-                    <View style={{ height: responsiveHeight(7), width: responsiveWidth(100), justifyContent: 'center', backgroundColor: '#6A5AE0', paddingHorizontal: 20 }}>
+                    <View style={{ height: responsiveHeight(7), width: responsiveWidth(100), justifyContent: 'center', backgroundColor: '#6A5AE0', paddingHorizontal: 20, marginTop: -30 }}>
                         <View style={{ flexDirection: 'row', justifyContent: 'flex-start' }}>
-                            <TouchableOpacity onPress={() => setModalForAnalysis(false)} style={{ justifyContent: 'center', alignSelf: 'flex-start', marginTop: 15 }}>
+                            <TouchableOpacity onPress={closeModal8} style={{ justifyContent: 'center', alignSelf: 'flex-start', marginTop: 15 }}>
                                 <AntDesign name="arrowleft" size={24} color="white" />
                             </TouchableOpacity>
 
-                            <Text style={{ color: '#fff', fontSize: 20, fontWeight: '500', alignSelf: 'center', marginTop: 15, marginLeft: '26%' }}>Question Analysis</Text>
+                            <Text style={{ color: '#fff', fontSize: 20, fontWeight: '500', alignSelf: 'center', marginTop: 15, marginLeft: '30%' }}>Analysis</Text>
                         </View>
                     </View>
-
-
-
-                    <ScrollView style={{ marginBottom: 0 }}>
-
+                    <ScrollView>
 
                         <View style={{ height: responsiveHeight(32), width: responsiveWidth(90), marginBottom: 10, paddingHorizontal: 20, backgroundColor: '#fff', alignSelf: 'center', marginTop: 10, borderRadius: 8, elevation: 10 }}>
-                            <Text style={{ marginTop: 20, fontSize: 17, fontWeight: '500', color: '#000' }}>Q. {winnersListPageAllDataOfAUserForParticularExamData?.question}</Text>
-                            {winnersListPageAllDataOfAUserForParticularExamData?.options?.map((res, index) => {
+                            <Text style={{ marginTop: 20, fontSize: 17, fontWeight: '500', color: '#000' }}>Q. {mydata}</Text>
+
+                            {question1?.map((res) => {
                                 return (
                                     <>
-                                        <View key={index} style={{ marginTop: 10, flexDirection: 'row', marginRight: 20 }}>
-                                            <TouchableOpacity style={{
-                                                height: responsiveHeight(3.5), marginRight: 10,
-                                                backgroundColor:
-                                                    res.id === winnersListPageAllDataOfAUserForParticularExamData?.answer
-                                                        ? 'green' // Real answer shown in green
-                                                        : winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.answer === res.id
-                                                            ? 'red' // Wrong answer given, option turns red
-                                                            : select === res.id // If option is selected
-                                                                ? '#0085FF' // Blueish color
-                                                                : '#6A5AE0', // All other options in blueish color
-                                                width: responsiveWidth(7), borderWidth: 1, borderRadius: 100, justifyContent: 'center'
-                                            }}
-                                                onPress={() => setSelect(0)}>
-                                                <Text style={{ alignSelf: 'center', fontWeight: '600', fontSize: 18, color: select == 0 ? '#fff' : '#6A5AE0' }}>{res.id}</Text>
+                                        <View style={{ marginTop: 10, flexDirection: 'row', marginRight: 20 }}>
+                                            <TouchableOpacity style={{ height: responsiveHeight(3.5), marginRight: 10, backgroundColor: select2 == 0 ? '#6A5AE0' : '#fff', width: responsiveWidth(7), borderWidth: 1, borderRadius: 100, justifyContent: 'center' }}
+                                                onPress={() => setSelectedOption2(0)}>
+                                                <Text style={{ alignSelf: 'center', fontWeight: '600', fontSize: 18, color: select2 == 0 ? '#fff' : '#6A5AE0' }}>{res.id}</Text>
                                             </TouchableOpacity>
 
-                                            <Text style={{
-                                                alignSelf: 'center', fontSize: 13, color:
-                                                    res.id === winnersListPageAllDataOfAUserForParticularExamData?.answer
-                                                        ? 'green' // Real answer shown in green
-                                                        : winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.answer === res.id
-                                                            ? 'red' // Wrong answer given, text turns red
-                                                            : '#000000' // All other text colors
-                                            }}>
-                                                {res?.answer}
-                                            </Text>
+                                            <Text style={{ alignSelf: 'center', fontSize: 13 }}>{res.answer}</Text>
+
                                         </View>
                                     </>
                                 )
@@ -1174,6 +1224,8 @@ const MyLeaderBoard2 = ({ navigation, route }) => {
                             }
 
                         </View>
+
+
 
                         <View
                             style={{
@@ -1203,8 +1255,9 @@ const MyLeaderBoard2 = ({ navigation, route }) => {
                                     <RadioButton
                                         color="#0085FF"
                                         uncheckedColor="#B9C3CC"
-                                        value="5"
-                                        status={winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.rM == 5.5 ? "checked" : "unchecked"}
+                                        value="first"
+                                        status={checked === "first" ? "checked" : "unchecked"}
+                                    // onPress={() => { setChecked("first"); setmainValuerl(5.5) }}
                                     />
                                 </View>
 
@@ -1238,7 +1291,8 @@ const MyLeaderBoard2 = ({ navigation, route }) => {
                                         color="#0085FF"
                                         uncheckedColor="#B9C3CC"
                                         value="second"
-                                        status={winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.rM === 3.5 ? "checked" : "unchecked"}
+                                        status={checked === "second" ? "checked" : "unchecked"}
+                                    // onPress={() => { setChecked("second"); setmainValuerl(3.5) }}
                                     />
                                 </View>
 
@@ -1259,11 +1313,9 @@ const MyLeaderBoard2 = ({ navigation, route }) => {
                         </View>
 
 
-
-
                         <View
                             style={{
-                                height: responsiveHeight(12),
+                                height: responsiveHeight(15),
                                 width: responsiveWidth(90),
                                 marginBottom: 10,
                                 paddingHorizontal: 20,
@@ -1292,33 +1344,248 @@ const MyLeaderBoard2 = ({ navigation, route }) => {
                                     marginTop: 10,
                                 }}
                             >
-                                {options.map((option, index) => (
-                                    <TouchableOpacity
-                                        key={index}
+                                <TouchableOpacity
+                                    style={{
+                                        height: responsiveHeight(3),
+                                        backgroundColor: correct == 0 ? "#000" : "#fff",
+                                        justifyContent: "center",
+                                        width: responsiveWidth(6),
+                                        borderWidth: 1,
+                                        borderRadius: 5,
+                                    }}
+                                // onPress={() => { calculation(mainValuerl, 0), setCorrect(0) }}
+                                // onPress={() => { setChecked("second"); setmainValuerl(3.5) }}
+
+                                >
+                                    <Text
                                         style={{
-                                            height: responsiveHeight(3),
-                                            justifyContent: "center",
-                                            backgroundColor: winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.rC === index && !(winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.answer === 5) ? "#000" : "#fff",
-                                            width: responsiveWidth(6),
-                                            borderWidth: 1,
-                                            borderRadius: 5,
+                                            alignSelf: "center",
+                                            fontWeight: "600",
+                                            fontSize: 15,
+                                            color: correct == 0 ? "#fff" : "#000",
                                         }}
-                                    // onPress={() => onPress(index)}
                                     >
-                                        <Text
-                                            style={{
-                                                alignSelf: "center",
-                                                fontWeight: "600",
-                                                fontSize: 15,
-                                                color: winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.rC === index && !(winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.answer === 5) ? "#fff" : "#000",
-                                            }}
-                                        >
-                                            {option}
-                                        </Text>
-                                    </TouchableOpacity>
-                                ))}
+                                        {A}
+                                    </Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity
+                                    style={{
+                                        height: responsiveHeight(3),
+                                        justifyContent: "center",
+                                        backgroundColor: correct == 1 ? "#000" : "#fff",
+                                        width: responsiveWidth(6),
+                                        borderWidth: 1,
+                                        borderRadius: 5,
+                                    }}
+                                // onPress={() => { calculation(mainValuerl, 1), setCorrect(1) }}
+                                >
+                                    <Text
+                                        style={{
+                                            alignSelf: "center",
+                                            fontWeight: "600",
+                                            fontSize: 15,
+                                            color: correct == 1 ? "#fff" : "#000",
+                                        }}
+                                    >
+                                        {B}
+                                    </Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity
+                                    style={{
+                                        height: responsiveHeight(3),
+                                        justifyContent: "center",
+                                        backgroundColor: correct == 2 ? "#000" : "#fff",
+                                        width: responsiveWidth(6),
+                                        borderWidth: 1,
+                                        borderRadius: 5,
+                                    }}
+                                // onPress={() => { setCorrect(2), calculation(mainValuerl, 2) }}
+                                >
+                                    <Text
+                                        style={{
+                                            alignSelf: "center",
+                                            fontWeight: "600",
+                                            fontSize: 15,
+                                            color: correct == 2 ? "#fff" : "#000",
+                                        }}
+                                    >
+                                        {C}
+                                    </Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity
+                                    style={{
+                                        height: responsiveHeight(3),
+                                        justifyContent: "center",
+                                        backgroundColor: correct == 3 ? "#000" : "#fff",
+                                        width: responsiveWidth(6),
+                                        borderWidth: 1,
+                                        borderRadius: 5,
+                                    }}
+                                // onPress={() => { setCorrect(3), calculation(mainValuerl, 3) }}
+                                >
+                                    <Text
+                                        style={{
+                                            alignSelf: "center",
+                                            fontWeight: "600",
+                                            fontSize: 15,
+                                            color: correct == 3 ? "#fff" : "#000",
+                                        }}
+                                    >
+                                        {D}
+                                    </Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity
+                                    style={{
+                                        height: responsiveHeight(3),
+                                        justifyContent: "center",
+                                        backgroundColor: correct == 4 ? "#000" : "#fff",
+                                        width: responsiveWidth(6),
+                                        borderWidth: 1,
+                                        borderRadius: 5,
+                                    }}
+                                // onPress={() => { setCorrect(4), calculation(mainValuerl, 4) }}
+                                >
+                                    <Text
+                                        style={{
+                                            alignSelf: "center",
+                                            fontWeight: "600",
+                                            fontSize: 15,
+                                            color: correct == 4 ? "#fff" : "#000",
+                                        }}
+                                    >
+                                        {E}
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+
+                            <View
+                                style={{
+                                    flexDirection: "row",
+                                    justifyContent: "space-between",
+                                    marginTop: 12,
+                                }}
+                            >
+                                <TouchableOpacity
+                                    style={{
+                                        height: responsiveHeight(3),
+                                        justifyContent: "center",
+                                        backgroundColor: correct == 5 ? "#000" : "#fff",
+                                        width: responsiveWidth(6),
+                                        borderWidth: 1,
+                                        borderRadius: 5,
+                                    }}
+                                // onPress={() => { setCorrect(5), calculation(mainValuerl, 5) }}
+                                >
+                                    <Text
+                                        style={{
+                                            alignSelf: "center",
+                                            fontWeight: "600",
+                                            fontSize: 15,
+                                            color: correct == 5 ? "#fff" : "#000",
+                                        }}
+                                    >
+                                        {F}
+                                    </Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity
+                                    style={{
+                                        height: responsiveHeight(3),
+                                        justifyContent: "center",
+                                        backgroundColor: correct == 6 ? "#000" : "#fff",
+                                        width: responsiveWidth(6),
+                                        borderWidth: 1,
+                                        borderRadius: 5,
+                                    }}
+                                // onPress={() => { setCorrect(6), calculation(mainValuerl, 6) }}
+                                >
+                                    <Text
+                                        style={{
+                                            alignSelf: "center",
+                                            fontWeight: "600",
+                                            fontSize: 15,
+                                            color: correct == 6 ? "#fff" : "#000",
+                                        }}
+                                    >
+                                        {G}
+                                    </Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity
+                                    style={{
+                                        height: responsiveHeight(3),
+                                        justifyContent: "center",
+                                        backgroundColor: correct == 7 ? "#000" : "#fff",
+                                        width: responsiveWidth(6),
+                                        borderWidth: 1,
+                                        borderRadius: 5,
+                                    }}
+                                // onPress={() => { setCorrect(7), calculation(mainValuerl, 7) }}
+                                >
+                                    <Text
+                                        style={{
+                                            alignSelf: "center",
+                                            fontWeight: "600",
+                                            fontSize: 15,
+                                            color: correct == 7 ? "#fff" : "#000",
+                                        }}
+                                    >
+                                        {H}
+                                    </Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity
+                                    style={{
+                                        height: responsiveHeight(3),
+                                        justifyContent: "center",
+                                        backgroundColor: correct == 8 ? "#000" : "#fff",
+                                        width: responsiveWidth(6),
+                                        borderWidth: 1,
+                                        borderRadius: 5,
+                                    }}
+                                // onPress={() => { setCorrect(8), calculation(mainValuerl, 8) }}
+                                >
+                                    <Text
+                                        style={{
+                                            alignSelf: "center",
+                                            fontWeight: "600",
+                                            fontSize: 15,
+                                            color: correct == 8 ? "#fff" : "#000",
+                                        }}
+                                    >
+                                        {I}
+                                    </Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity
+                                    style={{
+                                        height: responsiveHeight(3),
+                                        justifyContent: "center",
+                                        backgroundColor: correct == 9 ? "#000" : "#fff",
+                                        width: responsiveWidth(6),
+                                        borderWidth: 1,
+                                        borderRadius: 5,
+                                    }}
+                                // onPress={() => { setCorrect(9), calculation(mainValuerl, 9) }}
+                                >
+                                    <Text
+                                        style={{
+                                            alignSelf: "center",
+                                            fontWeight: "600",
+                                            fontSize: 15,
+                                            color: correct == 9 ? "#fff" : "#000",
+                                        }}
+                                    >
+                                        {J}
+                                    </Text>
+                                </TouchableOpacity>
                             </View>
                         </View>
+
 
                         <View
                             style={{
@@ -1338,7 +1605,7 @@ const MyLeaderBoard2 = ({ navigation, route }) => {
                                     fontWeight: "500",
                                 }}
                             >
-                                Row Point Panel
+                                Row point Panel
                             </Text>
 
                             <View style={{ borderBottomWidth: 0.6, padding: 4 }}></View>
@@ -1360,10 +1627,9 @@ const MyLeaderBoard2 = ({ navigation, route }) => {
                                             fontSize: 15,
                                             alignSelf: "center",
                                             marginTop: 5,
-                                            color: "#0085FF"
                                         }}
                                     >
-                                        {winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.rM}
+                                        {rowdata.rM}
                                     </Text>
                                 </View>
 
@@ -1375,10 +1641,9 @@ const MyLeaderBoard2 = ({ navigation, route }) => {
                                             fontSize: 15,
                                             alignSelf: "center",
                                             marginTop: 5,
-                                            color: "#0085FF"
                                         }}
                                     >
-                                        {winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.rC}
+                                        {rowdata.rC}
                                     </Text>
 
                                 </View>
@@ -1395,7 +1660,7 @@ const MyLeaderBoard2 = ({ navigation, route }) => {
                                             marginTop: 5,
                                         }}
                                     >
-                                        {winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.timeTaken}
+                                        {rowdata.timeTaken}
                                     </Text>
                                 </View>
                             </View>
@@ -1447,10 +1712,10 @@ const MyLeaderBoard2 = ({ navigation, route }) => {
                                             alignSelf: "center",
                                             fontWeight: "600",
                                             fontSize: 15,
-                                            color: "#0085FF"
                                         }}
                                     >
-                                        {winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.rMrC}
+                                        {rowdata.rawPoints}
+
                                     </Text>
                                 </TouchableOpacity>
 
@@ -1490,7 +1755,7 @@ const MyLeaderBoard2 = ({ navigation, route }) => {
                                             fontSize: 15,
                                         }}
                                     >
-                                        {winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.t_m_Points}
+                                        {rowdata.timeTaken}
                                     </Text>
 
                                 </TouchableOpacity>
@@ -1519,351 +1784,286 @@ const MyLeaderBoard2 = ({ navigation, route }) => {
                             >
                                 <Text
                                     style={{ alignSelf: "center", fontWeight: "600", fontSize: 15 }}
-                                >{winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.rawPoints}</Text>
+                                >9</Text>
                             </TouchableOpacity>
                         </View>
 
+                      <View style={{ height: responsiveHeight(87), borderRadius: 10, elevation: 10, marginBottom: 20, marginTop: 20, width: responsiveWidth(90), backgroundColor: '#fff', alignSelf: 'center' }}>
+                    <Text style={{ alignSelf: 'center', fontSize: 20, marginTop: 10, fontWeight: '500' }}>Answer Analysis</Text>
 
-                        <View style={{ height: responsiveHeight(95), elevation: 10, marginBottom: '10%', marginTop: 20, width: responsiveWidth(90), borderRadius: 10, backgroundColor: '#fff', alignSelf: 'center' }}>
-                            <Text style={{ alignSelf: 'center', fontSize: 20, marginTop: 10, fontWeight: '500' }}>Answer Analysis</Text>
+                    <View style={{ height: responsiveHeight(10), elevation: 10, marginTop: 20, width: responsiveWidth(90), borderRadius: 10, backgroundColor: '#fff', alignSelf: 'center' }}>
 
-                            <View style={{ height: responsiveHeight(10), elevation: 10, marginTop: 20, width: responsiveWidth(90), borderRadius: 10, backgroundColor: '#fff', alignSelf: 'center' }}>
+                        <View style={{ flexDirection: 'row', justifyContent: 'flex-start' }}>
+                            <Text style={{ fontSize: 15, marginTop: 10, marginHorizontal: 20 }}>Currect Answer     : -</Text>
+                            <View style={{ alignSelf: 'center', marginTop: 10, height: responsiveHeight(3), width: responsiveWidth(7), borderWidth: 0.5, borderRadius: 5 }}>
+                                <Text style={{ alignSelf: 'center' }}>attemptAns</Text>
+                            </View>
+                        </View>
 
-                                <View style={{ flexDirection: 'row', justifyContent: 'flex-start' }}>
-                                    <Text style={{ fontSize: 15, marginTop: 10, marginHorizontal: 20 }}>Correct Answer : -</Text>
-                                    <View style={{ alignSelf: 'center', marginTop: 10, height: responsiveHeight(3), width: responsiveWidth(10), borderWidth: 0.5, borderRadius: 5 }}>
-                                        <Text style={{ alignSelf: 'center' }}>{winnersListPageAllDataOfAUserForParticularExamData?.answer}</Text>
-                                    </View>
-                                </View>
+                        <View style={{ flexDirection: 'row', justifyContent: 'flex-start' }}>
+                            <Text style={{ fontSize: 15, marginTop: 10, marginHorizontal: 20 }}>Your Answer         : -</Text>
+                            <View style={{ alignSelf: 'center', marginTop: 10, height: responsiveHeight(3), width: responsiveWidth(7), borderWidth: 0.5, borderRadius: 5 }}>
+                                <Text style={{ alignSelf: 'center' }}>answer</Text>
+                            </View>
+                        </View>
 
-                                <View style={{ flexDirection: 'row', justifyContent: 'flex-start' }}>
-                                    <Text style={{ fontSize: 15, marginTop: 10, marginHorizontal: 20 }}>Your Answer      : -</Text>
-                                    <View style={{ alignSelf: 'center', marginTop: 10, height: responsiveHeight(3), width: responsiveWidth(10), borderWidth: 0.5, borderRadius: 5 }}>
-                                        <Text style={{ alignSelf: 'center' }}>{winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.answer === 5 ? "None" : winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.answer}</Text>
-                                    </View>
-                                </View>
+                    </View>
+
+                    <View
+                        style={{
+                            height: responsiveHeight(40),
+                            elevation: 10,
+                            borderRadius: 10,
+                            width: responsiveWidth(90),
+                            backgroundColor: "#fff",
+                            alignSelf: 'center',
+                            marginTop: 10
+                        }}
+                    >
+                        <Text
+                            style={{
+                                alignSelf: "center",
+                                marginTop: 12,
+                                fontSize: 14,
+                                fontWeight: "500",
+                            }}
+                        >
+                            main point Panel
+                        </Text>
+
+                        <View style={{ borderBottomWidth: 0.6, padding: 4 }}></View>
+
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                marginTop: 7,
+                                justifyContent: "space-between",
+                                marginHorizontal: 20,
+                            }}
+                        >
+                            <View>
+                                <Text style={{ fontWeight: "500", fontSize: 15 }}>M</Text>
+
+                                <Text
+                                    style={{
+                                        fontWeight: "500",
+                                        fontSize: 15,
+                                        alignSelf: "center",
+                                        marginTop: 5,
+                                    }}
+                                >
+                                    5.5
+                                </Text>
+                            </View>
+
+                            <View>
+                                <Text style={{ fontWeight: "500", fontSize: 15 }}>C%</Text>
+                                <Text
+                                    style={{
+                                        fontWeight: "500",
+                                        fontSize: 15,
+                                        alignSelf: "center",
+                                        marginTop: 5,
+                                    }}
+                                >
+                                    3
+                                </Text>
+
                             </View>
 
 
-                            <View
+
+                            <View>
+                                <Text style={{ fontWeight: "500", fontSize: 15 }}>T(Time)</Text>
+                                <Text
+                                    style={{
+                                        fontWeight: "500",
+                                        fontSize: 15,
+                                        alignSelf: "center",
+                                        marginTop: 5,
+                                    }}
+                                >
+                                    20
+                                </Text>
+                            </View>
+                        </View>
+
+                        <View style={{ borderBottomWidth: 0.6, marginTop: 4 }}></View>
+
+
+
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                marginTop: 5,
+                                justifyContent: 'space-evenly',
+                                marginHorizontal: 20, marginLeft: 10
+                            }}
+                        >
+                            <TouchableOpacity
                                 style={{
-                                    height: responsiveHeight(40),
-                                    elevation: 10,
-                                    borderRadius: 10,
-                                    width: responsiveWidth(90),
-                                    backgroundColor: "#fff",
-                                    alignSelf: 'center',
-                                    marginTop: 10
+                                    height: responsiveHeight(3.5),
+                                    justifyContent: "center",
+                                    width: responsiveWidth(11),
+                                    borderWidth: 1,
+                                    borderRadius: 5,
                                 }}
                             >
                                 <Text
                                     style={{
                                         alignSelf: "center",
-                                        marginTop: 12,
-                                        fontSize: 14,
-                                        fontWeight: "500",
+                                        fontWeight: "600",
+                                        fontSize: 15,
                                     }}
                                 >
-                                    Main Point Panel
+                                    30
+
+                                </Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                style={{
+                                    height: responsiveHeight(3.5),
+                                    justifyContent: "center",
+                                    width: responsiveWidth(8),
+                                    borderWidth: 1,
+                                    borderRadius: 5,
+                                }}
+                            >
+                                <Text
+                                    style={{
+                                        alignSelf: "center",
+                                        fontWeight: "600",
+                                        fontSize: 15,
+                                    }}
+                                >
+                                    +
+                                </Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                style={{
+                                    height: responsiveHeight(3.5),
+                                    justifyContent: "center",
+                                    width: responsiveWidth(8),
+                                    borderWidth: 1,
+                                    borderRadius: 5,
+                                }}
+                            >
+                                <Text
+                                    style={{
+                                        alignSelf: "center",
+                                        fontWeight: "600",
+                                        fontSize: 15,
+                                    }}
+                                >
+                                    5s
                                 </Text>
 
-                                <View style={{ borderBottomWidth: 0.6, padding: 4 }}></View>
+                            </TouchableOpacity>
+                        </View>
 
-                                <View
-                                    style={{
-                                        flexDirection: "row",
-                                        marginTop: 7,
-                                        justifyContent: "space-between",
-                                        marginHorizontal: 20,
-                                    }}
-                                >
-                                    <View>
-                                        <Text style={{ fontWeight: "500", fontSize: 15 }}>M</Text>
-
-                                        <Text
-                                            style={{
-                                                fontWeight: "500",
-                                                fontSize: 15,
-                                                alignSelf: "center",
-                                                marginTop: 5,
-                                                color: "#0085FF"
-                                            }}
-                                        >
-                                            {winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.mM}
-                                        </Text>
-                                    </View>
-
-                                    <View>
-                                        <Text style={{ fontWeight: "500", fontSize: 15 }}>C%</Text>
-                                        <Text
-                                            style={{
-                                                fontWeight: "500",
-                                                fontSize: 15,
-                                                alignSelf: "center",
-                                                marginTop: 5,
-                                                color: "#0085FF"
-                                            }}
-                                        >
-                                            {winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.mC}
-                                        </Text>
-
-                                    </View>
+                        <TouchableOpacity
+                            style={{
+                                height: responsiveHeight(4),
+                                alignSelf: "center",
+                                marginTop: 15,
+                                justifyContent: "center",
+                                width: responsiveWidth(28),
+                                borderWidth: 1,
+                                borderRadius: 5,
+                            }}
+                        >
+                            <Text
+                                style={{ alignSelf: "center", fontWeight: "600", fontSize: 15 }}
+                            >7</Text>
+                        </TouchableOpacity>
+                    </View>
 
 
+                    <View style={{ height: responsiveHeight(35), alignSelf: 'center', width: responsiveWidth(90), marginBottom: 10, backgroundColor: '#fff', alignSelf: 'center', marginTop: 10, borderRadius: 8, elevation: 10 }}>
+                        <View style={{ flexDirection: 'row', justifyContent: 'center', marginHorizontal: 10 }}>
 
-                                    <View>
-                                        <Text style={{ fontWeight: "500", fontSize: 15 }}>T(Time)</Text>
-                                        <Text
-                                            style={{
-                                                fontWeight: "500",
-                                                fontSize: 15,
-                                                alignSelf: "center",
-                                                marginTop: 5,
-                                                color: "#0085FF"
-                                            }}
-                                        >
-                                            {winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.timeTaken}
-                                        </Text>
-                                    </View>
-                                    <View>
-                                        <Text style={{ fontWeight: "500", fontSize: 15 }}>C+T(correct% +T) </Text>
-                                        <Text
-                                            style={{
-                                                fontWeight: "500",
-                                                fontSize: 15,
-                                                alignSelf: "center",
-                                                marginTop: 5,
-                                            }}
-                                        >
-                                            {isNaN(winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.mC) || isNaN(winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.timeTaken)
-                                                ? "0"
-                                                : (winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.mC + winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.timeTaken)}
-                                        </Text>
-                                    </View>
-                                </View>
-
-                                <View style={{ borderBottomWidth: 0.6, marginTop: 4 }}></View>
-
-                                {/* <View style={{ transform: [{ rotate: '140deg'}] }}>
-                            <Image source={require('../images/line.png')} style={{ height: responsiveHeight(5), width: responsiveWidth(34),marginRight:20,zIndex:1,position:'absolute'}} />
-                        </View> */}
-
-
-                                <View style={{ flexDirection: 'row', justifyContent: 'flex-start', marginLeft: 20, marginTop: 5 }}>
-                                    <View style={{ transform: [{ rotate: '47deg' }] }}>
-                                        <Image source={require('../images/line.png')} style={{ height: responsiveHeight(5), width: responsiveWidth(16) }} />
-                                    </View>
-
-
-                                    <View style={{ transform: [{ rotate: '130deg' }] }}>
-                                        <Image source={require('../images/line.png')} style={{ height: responsiveHeight(5), width: responsiveWidth(14), marginRight: 20 }} />
-                                    </View>
-
-                                    <View style={{ transform: [{ rotate: '38deg' }], marginTop: 5 }}>
-                                        <Image source={require('../images/line.png')} style={{ height: responsiveHeight(5), width: responsiveWidth(22) }} />
-                                    </View>
-
-                                    <View style={{ transform: [{ rotate: '130deg' }] }}>
-                                        <Image source={require('../images/line.png')} style={{ height: responsiveHeight(5), width: responsiveWidth(16), marginRight: 20 }} />
-                                    </View>
-
-
-
-
-                                </View>
-
-                                <View
-                                    style={{
-                                        flexDirection: "row",
-                                        marginTop: 5,
-                                        justifyContent: 'space-evenly',
-                                        marginHorizontal: 20, marginLeft: 10
-                                    }}
-                                >
-                                    <TouchableOpacity
-                                        style={{
-                                            height: responsiveHeight(3.5),
-                                            justifyContent: "center",
-                                            width: responsiveWidth(11),
-                                            borderWidth: 1,
-                                            borderRadius: 5,
-                                        }}
-                                    >
-                                        <Text
-                                            style={{
-                                                alignSelf: "center",
-                                                fontWeight: "600",
-                                                fontSize: 15,
-                                                color: "#0085FF"
-                                            }}
-                                        >
-                                            {(winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.t_MPoints)}
-
-                                        </Text>
-                                    </TouchableOpacity>
-
-                                    <TouchableOpacity
-                                        style={{
-                                            height: responsiveHeight(3.5),
-                                            justifyContent: "center",
-                                            width: responsiveWidth(8),
-                                            borderWidth: 1,
-                                            borderRadius: 5,
-                                        }}
-                                    >
-                                        <Text
-                                            style={{
-                                                alignSelf: "center",
-                                                fontWeight: "600",
-                                                fontSize: 15,
-                                            }}
-                                        >
-                                            +
-                                        </Text>
-                                    </TouchableOpacity>
-
-                                    <TouchableOpacity
-                                        style={{
-                                            height: responsiveHeight(3.5),
-                                            justifyContent: "center",
-                                            width: responsiveWidth(8),
-                                            borderWidth: 1,
-                                            borderRadius: 5,
-                                        }}
-                                    >
-                                        <Text
-                                            style={{
-                                                alignSelf: "center",
-                                                fontWeight: "600",
-                                                fontSize: 15,
-                                            }}
-                                        >
-                                            {(winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.t_m_Points)}
-                                        </Text>
-
-                                    </TouchableOpacity>
-                                </View>
-
-                                <View style={{ flexDirection: 'row', justifyContent: 'center', marginLeft: 0, marginTop: 10 }}>
-                                    <View style={{ transform: [{ rotate: '47deg' }] }}>
-                                        <Image source={require('../images/line.png')} style={{ height: responsiveHeight(5), width: responsiveWidth(20) }} />
-                                    </View>
-
-                                    <View style={{ transform: [{ rotate: '130deg' }] }}>
-                                        <Image source={require('../images/line.png')} style={{ height: responsiveHeight(5), width: responsiveWidth(20), marginRight: 20 }} />
-                                    </View>
-                                </View>
-
-                                <TouchableOpacity
-                                    style={{
-                                        height: responsiveHeight(4),
-                                        alignSelf: "center",
-                                        marginTop: 15,
-                                        justifyContent: "center",
-                                        width: responsiveWidth(28),
-                                        borderWidth: 1,
-                                        borderRadius: 5,
-                                    }}
-                                >
-                                    <Text
-                                        style={{ alignSelf: "center", fontWeight: "600", fontSize: 15 }}
-                                    >{winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.mainPoints}</Text>
-                                </TouchableOpacity>
-                            </View>
-
-
-
-                            <View style={{ height: responsiveHeight(35), alignSelf: 'center', width: responsiveWidth(90), marginBottom: 10, backgroundColor: '#fff', alignSelf: 'center', marginTop: 10, borderRadius: 8, elevation: 10 }}>
-
-
-                                <View style={{ flexDirection: 'row', justifyContent: 'center', marginHorizontal: 10 }}>
-
-                                    <View style={{ marginTop: 30, alignSelf: 'center' }}>
-                                        <PieChart
-                                            widthAndHeight={pieChartWidth}
-                                            series={series2}
-                                            sliceColor={sliceColor2}
-                                            coverRadius={0.45}
-                                            coverFill={'#FFF'}
-                                        />
-                                    </View>
-
-                                </View>
-
-                                {
-                                    winnersListPageAllDataOfAUserForParticularExamData?.correctPercentage <= winnersListPageAllDataOfAUserForParticularExamData?.wrongPercentage ? (
-
-                                        <Text style={{ fontSize: 14, position: 'absolute', color: '#000', fontWeight: '500', top: '20%', right: '33%' }}>{(((winnersListPageAllDataOfAUserForParticularExamData?.correctPercentage >= 1) && winnersListPageAllDataOfAUserForParticularExamData?.correctPercentage + "%"))}</Text>
-                                    ) :
-                                        (
-                                            <>
-                                                <Text style={{ fontSize: 14, position: 'absolute', color: '#000', fontWeight: '500', top: '20%', right: '33%' }}>{(((winnersListPageAllDataOfAUserForParticularExamData?.correctPercentage >= 1) && winnersListPageAllDataOfAUserForParticularExamData?.correctPercentage + "%"))}</Text>
-                                            </>
-                                        )
-                                }
-
-                                {
-                                    winnersListPageAllDataOfAUserForParticularExamData?.correctPercentage >= winnersListPageAllDataOfAUserForParticularExamData?.wrongPercentage ? (
-                                        <Text style={{ fontSize: 14, position: 'absolute', top: '20%', fontWeight: '500', right: '54%', color: '#000' }}>{(((winnersListPageAllDataOfAUserForParticularExamData?.wrongPercentage >= 1) && winnersListPageAllDataOfAUserForParticularExamData?.wrongPercentage + "%"))}
-
-                                        </Text>
-                                    ) :
-                                        (
-                                            <>
-                                                <Text style={{ fontSize: 14, position: 'absolute', top: '20%', fontWeight: '500', right: '54%', color: '#000' }}>{(((winnersListPageAllDataOfAUserForParticularExamData?.wrongPercentage >= 1) && winnersListPageAllDataOfAUserForParticularExamData?.wrongPercentage + "%"))}
-
-                                                </Text>
-                                            </>
-                                        )
-                                }
-
-
-
-
-
-                                <View style={{ marginTop: '5%', alignSelf: 'center', flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 50 }}>
-
-                                    <View>
-
-                                        <View style={{ flexDirection: 'row', alignSelf: 'center' }}>
-                                            <View style={{ height: responsiveHeight(1.9), width: responsiveWidth(3.8), backgroundColor: '#0085FF', alignSelf: 'center' }}>
-
-                                            </View>
-
-                                            <Text style={{ fontSize: 13, marginRight: 10, marginLeft: 10 }}>{winnersListPageAllDataOfAUserForParticularExamData?.correctCount} Correct</Text>
-                                        </View>
-                                    </View>
-
-                                    <View style={{ flexDirection: 'row' }}>
-                                        <View style={{ height: responsiveHeight(1.9), width: responsiveWidth(3.8), backgroundColor: '#A8A8A8', alignSelf: 'center' }}>
-
-                                        </View>
-
-                                        <Text style={{ fontSize: 13, marginLeft: 10 }}>{winnersListPageAllDataOfAUserForParticularExamData?.wrongCount} Incorrect</Text>
-                                    </View>
-
-
-
-
-
-                                </View>
+                            <View style={{ marginTop: 30, alignSelf: 'center' }}>
+                                <PieChart
+                                    widthAndHeight={pieChartWidth}
+                                    series={series2}
+                                    sliceColor={sliceColor2}
+                                    coverRadius={0.45}
+                                    coverFill={'#FFF'}
+                                />
                             </View>
 
                         </View>
 
+                        {
+                            attempte.correctPercnt <= attempte.wrongPercnt ? (
+
+                                <Text style={{ fontSize: 14, position: 'absolute', color: '#000', fontWeight: '500', top: '20%', right: '33%' }}>{((attempte.correctPercnt) / (attempte.wrongPercnt + attempte.correctPercnt) * 100).toFixed(1)}%</Text>
+                            ) :
+                                (
+                                    <>
+                                        <Text style={{ fontSize: 14, position: 'absolute', color: '#000', fontWeight: '500', top: '20%', right: '33%' }}>{((attempte.correctPercnt) / (attempte.wrongPercnt + attempte.correctPercnt) * 100).toFixed(1)}%</Text>
+                                    </>
+                                )
+                        }
+
+                        {
+                            attempte.correctPercnt >= attempte.wrongPercnt ? (
+                                <Text style={{ fontSize: 14, position: 'absolute', top: '20%', fontWeight: '500', right: '54%', color: '#0085FF' }}>{((attempte.wrongPercnt) / (attempte.wrongPercnt + attempte.correctPercnt) * 100).toFixed(1)}%
+
+                                </Text>
+                            ) :
+                                (
+                                    <>
+                                        <Text style={{ fontSize: 14, position: 'absolute', top: '20%', fontWeight: '500', right: '54%', color: '#0085FF' }}>{((attempte.wrongPercnt) / (attempte.wrongPercnt + attempte.correctPercnt) * 100).toFixed(1)}%
+
+                                        </Text>
+                                    </>
+                                )
+                        }
 
 
 
+
+                        <View style={{ marginTop: '5%', alignSelf: 'center', flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 50 }}>
+
+                            <View>
+
+                                <View style={{ flexDirection: 'row', alignSelf: 'center' }}>
+                                    <View style={{ height: responsiveHeight(1.9), width: responsiveWidth(3.8), backgroundColor: '#0085FF', alignSelf: 'center' }}>
+
+                                    </View>
+
+                                    <Text style={{ fontSize: 13, marginRight: 10, marginLeft: 10 }}>{attempte.correctPercnt} Correct</Text>
+                                </View>
+                            </View>
+
+                            <View style={{ flexDirection: 'row' }}>
+                                <View style={{ height: responsiveHeight(1.9), width: responsiveWidth(3.8), backgroundColor: '#A8A8A8', alignSelf: 'center' }}>
+
+                                </View>
+
+                                <Text style={{ fontSize: 13, marginLeft: 10 }}>{attempte.wrongPercnt} Incorrect</Text>
+                            </View>
+
+
+
+
+
+                        </View>
+                    </View>
+
+                </View>
 
                     </ScrollView>
 
-                </SafeAreaView>
+                </View>
 
-            </Modal>
+            </Modal> */}
 
         </SafeAreaView>
-
     )
 }
 
-export default MyLeaderBoard2
+export default MyLeaderBoard3

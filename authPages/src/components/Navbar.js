@@ -12,15 +12,15 @@ const Navbar = ({ navigation }) => {
     const handleTabPress = (tabName) => {
         setActiveTab(tabName);
         navigation.navigate(tabName);
+        dispatch(activeTabFunc({ activeTab: tabName }));
     };
 
     useEffect(() => {
-        if (activeTab) {
-            dispatch(activeTabFunc({ activeTab }))
-        }
-    }, [dispatch, activeTab])
+        setActiveTab(activeTabState);
+    }, [activeTabState]);
 
-    console.log("activeTabState", activeTabState)
+    // console.log("activeTabState", activeTabState)
+    // console.log("activeTab", activeTab)
     return (
         <View style={{
             flexDirection: "row",
@@ -30,11 +30,11 @@ const Navbar = ({ navigation }) => {
         }}>
             <TouchableOpacity onPress={() => handleTabPress('Home')}>
                 <Text style={{
-                    color: activeTabState === 'Home' ? '#fff' : '#C8C8C8',
+                    color: activeTab === 'Home' ? '#fff' : '#C8C8C8',
                     fontWeight: "500",
                     fontSize: 15,
                     alignSelf: "flex-start",
-                    borderBottomWidth: activeTabState === 'Home' ? 1 : 0, // Add border bottom if tab is active
+                    borderBottomWidth: activeTab === 'Home' ? 1 : 0, // Add border bottom if tab is active
                     borderColor: "#fff",
                 }}>
                     Home
@@ -43,11 +43,11 @@ const Navbar = ({ navigation }) => {
 
             <TouchableOpacity onPress={() => handleTabPress('MyExam')}>
                 <Text style={{
-                    color: activeTabState === 'MyExam' ? '#fff' : '#C8C8C8',
+                    color: activeTab === 'MyExam' ? '#fff' : '#C8C8C8',
                     fontWeight: "400",
                     fontSize: 16,
                     alignSelf: "flex-start",
-                    borderBottomWidth: activeTabState === 'MyExam' ? 1 : 0, // Add border bottom if tab is active
+                    borderBottomWidth: activeTab === 'MyExam' ? 1 : 0, // Add border bottom if tab is active
                     borderColor: "#fff",
                 }}>
                     My Exams
@@ -56,11 +56,11 @@ const Navbar = ({ navigation }) => {
 
             <TouchableOpacity onPress={() => handleTabPress('Winner')}>
                 <Text style={{
-                    color: activeTabState === 'Winner' ? '#fff' : '#C8C8C8',
+                    color: activeTab === 'Winner' ? '#fff' : '#C8C8C8',
                     fontWeight: "400",
                     fontSize: 15,
                     alignSelf: "flex-start",
-                    borderBottomWidth: activeTabState === 'Winner' ? 1 : 0, // Add border bottom if tab is active
+                    borderBottomWidth: activeTab === 'Winner' ? 1 : 0, // Add border bottom if tab is active
                     borderColor: "#fff",
                 }}>
                     Winner
@@ -69,11 +69,11 @@ const Navbar = ({ navigation }) => {
 
             <TouchableOpacity onPress={() => handleTabPress('Percentage')}>
                 <Text style={{
-                    color: activeTabState === 'Percentage' ? '#fff' : '#C8C8C8',
+                    color: activeTab === 'Percentage' ? '#fff' : '#C8C8C8',
                     fontWeight: "400",
                     fontSize: 15,
                     alignSelf: "flex-start",
-                    borderBottomWidth: activeTabState === 'Percentage' ? 1 : 0, // Add border bottom if tab is active
+                    borderBottomWidth: activeTab === 'Percentage' ? 1 : 0, // Add border bottom if tab is active
                     borderColor: "#fff",
                 }}>
                     Correct %

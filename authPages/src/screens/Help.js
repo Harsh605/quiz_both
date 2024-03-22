@@ -13,8 +13,9 @@ const Help = ({ navigation }) => {
 
     const shareContent = async () => {
         try {
+            const message2= `Hi there! I could use some assistance. Can you help me out?`;
             const options = {
-                message: `${JSON.stringify(refer)}`,
+                message: message2
                 // You can specify more options, such as URL, title, type, etc.
             };
 

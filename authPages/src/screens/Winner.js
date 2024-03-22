@@ -7,6 +7,7 @@ import Topbar from "../components/Topbar";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 import { winnerPageAllExams } from "../../slices/examSlice";
+import { convertMillisecondsToDateTime } from "../utils/FormateTime";
 
 const Winner = ({ navigation }) => {
   const dispatch = useDispatch()
@@ -22,15 +23,31 @@ const Winner = ({ navigation }) => {
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
     setTimeout(() => {
+      dispatch(winnerPageAllExams({ name: searchName }))
       setRefreshing(false);
     }, 2000);
+  }, [dispatch, searchName]);
+  
+  useEffect(() => {
+    onRefresh()
   }, []);
 
   useEffect(() => {
-    dispatch(winnerPageAllExams({ name: searchName }))
+    const fetchData = () => {
+      dispatch(winnerPageAllExams({ name: searchName }))
+    };
+
+    // Fetch data immediately when the component mounts
+    fetchData();
+
+    // Set interval to fetch data every 2 minutes
+    const intervalId = setInterval(fetchData, 1 * 60 * 1000); // 2 minutes
+
+    // Clean up function to clear the interval when the component unmounts
+    return () => clearInterval(intervalId);
   }, [dispatch, searchName])
 
-
+  console.log("winnerPageAllExamsData",winnerPageAllExamsData)
   return (
     <>
       <View>
@@ -146,163 +163,164 @@ const Winner = ({ navigation }) => {
           }>
 
 
-            {winnerPageAllExamsData?.map((res) => {
-              return (
-                <>
-                  <View
-                    style={{
-                      height: responsiveHeight(42),
-                      width: responsiveWidth(90),
-                      marginBottom: 10,
-                      paddingHorizontal: 20,
-                      backgroundColor: "#fff",
-                      alignSelf: "center",
-                      marginTop: 20,
-                      borderRadius: 5,
-                      elevation: 10,
-                    }}
-                  >
-                    <Text
-                      style={{
-                        color: "#6A5ADF",
-                        fontWeight: "500",
-                        fontSize: 16,
-                        marginTop: 15,
-                      }}
-                    >
-                      {res.gameNameInEnglish}
-                    </Text>
-                    <Text
-                      style={{
-                        color: "#000",
-                        fontWeight: "500",
-                        fontSize: 14,
-                        marginTop: 5,
-                      }}
-                    >
-                      Rank : #{res.rank}
-                      {/* {res._id} */}
-                    </Text>
-
-                    <View style={{ borderBottomWidth: 0.6, marginTop: 10 }}></View>
-
+            {winnerPageAllExamsData?.length > 0 &&
+              [...winnerPageAllExamsData]?.sort((a, b) => new Date(b.schedule) - new Date(a.schedule))
+                .map((res, index) => {
+                  return (
                     <View
+                      key={index}
                       style={{
-                        flexDirection: "row",
-                        justifyContent: "flex-start",
-                        marginTop: 10,
-                      }}
-                    >
-                      <Image
-                        source={require("../images/calender.png")}
-                        style={{
-                          tintColor: "#6A5ADF",
-                          height: responsiveHeight(4),
-                          width: responsiveWidth(8),
-                        }}
-                      />
-
-                      <Text style={{ alignSelf: "center", marginLeft: 10, fontSize: 13 }}>
-                        {new Date(res.schedule * 1000).toDateString()}
-                      </Text>
-                    </View>
-
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        justifyContent: "flex-start",
-                        marginTop: 10,
-                      }}
-                    >
-                      <Image
-                        source={require("../images/question.png")}
-                        style={{
-                          tintColor: "#6A5ADF",
-                          height: responsiveHeight(4),
-                          width: responsiveWidth(8),
-                        }}
-                      />
-
-                      <Text style={{ alignSelf: "center", marginLeft: 10, fontSize: 13 }}>
-                        {res.noOfQuestion} Questions | Time {parseInt(parseInt(res.duration) / 60000)} mins
-                      </Text>
-                    </View>
-
-                    <View
-                      style={{
-                        height: responsiveHeight(5),
-                        justifyContent: "center",
-                        borderRadius: 20,
-                        width: responsiveWidth(80),
-                        marginTop: 10,
-                        backgroundColor: "#EDEAFB",
+                        height: responsiveHeight(42),
+                        width: responsiveWidth(90),
+                        marginBottom: 10,
+                        paddingHorizontal: 20,
+                        backgroundColor: "#fff",
                         alignSelf: "center",
-                      }}
-                    >
-                      <Text
-                        style={{
-                          marginLeft: 10,
-                          color: "#6A5ADF",
-                          fontWeight: "500",
-                          fontSize: 14,
-                        }}
-                      >
-                        Joined : {res?.noOfParticipation}
-                      </Text>
-                    </View>
-
-                    <View
-                      style={{
-                        height: responsiveHeight(5),
-                        justifyContent: "center",
-                        borderRadius: 20,
-                        width: responsiveWidth(80),
-                        marginTop: 10,
-                        backgroundColor: "#EDEAFB",
-                        alignSelf: "center",
-                      }}
-                    >
-                      <Text
-                        style={{
-                          marginLeft: 10,
-                          color: "#6A5ADF",
-                          fontWeight: "500",
-                          fontSize: 14,
-                        }}
-                      >
-                        Joined Fees: ₹{res.pricePool}
-                      </Text>
-                    </View>
-
-                    <TouchableOpacity
-                      style={{
-                        height: responsiveHeight(4.8),
-                        justifyContent: "center",
-                        borderRadius: 25,
-                        alignSelf: "center",
-                        width: responsiveWidth(48),
                         marginTop: 20,
-                        backgroundColor: "#6A5AE0",
+                        borderRadius: 5,
+                        elevation: 10,
                       }}
-                      // {/* const noOfQue = route.params?.QuestionNo || null; */}
-                      // {/* onPress={() => navigation.navigate("LeaderboardRank", { QuestionNo: (item?.Game[0].noOfQuestion) })} */}
-                      onPress={() => navigation.navigate("WinnerDetail", { gameid: res?._id, noOfQue: res?.noOfQuestion })}
                     >
                       <Text
                         style={{
-                          color: "#fff",
-                          fontWeight: "400",
-                          alignSelf: "center",
+                          color: "#6A5ADF",
+                          fontWeight: "500",
                           fontSize: 16,
+                          marginTop: 15,
                         }}
                       >
-                        Show Winner Result
+                        {res.gameNameInEnglish}
                       </Text>
-                    </TouchableOpacity>
-                  </View>
-                </>
-              )
-            })}
+                      <Text
+                        style={{
+                          color: "#000",
+                          fontWeight: "500",
+                          fontSize: 14,
+                          marginTop: 5,
+                        }}
+                      >
+                        Rank: {res?.UserGame[0]?.rank}
+                        {/* {res._id} */}
+                      </Text>
+
+                      <View style={{ borderBottomWidth: 0.6, marginTop: 10 }}></View>
+
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          justifyContent: "flex-start",
+                          marginTop: 10,
+                        }}
+                      >
+                        <Image
+                          source={require("../images/calender.png")}
+                          style={{
+                            tintColor: "#6A5ADF",
+                            height: responsiveHeight(4),
+                            width: responsiveWidth(8),
+                          }}
+                        />
+
+                        <Text style={{ alignSelf: "center", marginLeft: 10, fontSize: 13 }}>
+                          {convertMillisecondsToDateTime(res?.schedule)}
+                        </Text>
+                      </View>
+
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          justifyContent: "flex-start",
+                          marginTop: 10,
+                        }}
+                      >
+                        <Image
+                          source={require("../images/question.png")}
+                          style={{
+                            tintColor: "#6A5ADF",
+                            height: responsiveHeight(4),
+                            width: responsiveWidth(8),
+                          }}
+                        />
+
+                        <Text style={{ alignSelf: "center", marginLeft: 10, fontSize: 13 }}>
+                          {res.noOfQuestion} Questions | Completed
+                        </Text>
+                      </View>
+
+                      <View
+                        style={{
+                          height: responsiveHeight(5),
+                          justifyContent: "center",
+                          borderRadius: 20,
+                          width: responsiveWidth(80),
+                          marginTop: 10,
+                          backgroundColor: "#EDEAFB",
+                          alignSelf: "center",
+                        }}
+                      >
+                        <Text
+                          style={{
+                            marginLeft: 10,
+                            color: "#6A5ADF",
+                            fontWeight: "500",
+                            fontSize: 14,
+                          }}
+                        >
+                          Joined : {res?.noOfParticipation}
+                        </Text>
+                      </View>
+
+                      <View
+                        style={{
+                          height: responsiveHeight(5),
+                          justifyContent: "center",
+                          borderRadius: 20,
+                          width: responsiveWidth(80),
+                          marginTop: 10,
+                          backgroundColor: "#EDEAFB",
+                          alignSelf: "center",
+                        }}
+                      >
+                        <Text
+                          style={{
+                            marginLeft: 10,
+                            color: "#6A5ADF",
+                            fontWeight: "500",
+                            fontSize: 14,
+                          }}
+                        >
+                          Joined Fees: ₹{res.pricePool}
+                        </Text>
+                      </View>
+
+                      <TouchableOpacity
+                        style={{
+                          height: responsiveHeight(4.8),
+                          justifyContent: "center",
+                          borderRadius: 25,
+                          alignSelf: "center",
+                          width: responsiveWidth(48),
+                          marginTop: 20,
+                          backgroundColor: "#6A5AE0",
+                        }}
+                        // {/* const noOfQue = route.params?.QuestionNo || null; */}
+                        // {/* onPress={() => navigation.navigate("LeaderboardRank", { QuestionNo: (item?.Game[0].noOfQuestion) })} */}
+                        onPress={() => navigation.navigate("WinnerDetail", { gameid: res?._id, noOfQue: res?.noOfQuestion })}
+                      >
+                        <Text
+                          style={{
+                            color: "#fff",
+                            fontWeight: "400",
+                            alignSelf: "center",
+                            fontSize: 16,
+                          }}
+                        >
+                          Show Winner Result
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  )
+                })}
           </ScrollView>
         </View>
 

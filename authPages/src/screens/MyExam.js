@@ -71,7 +71,7 @@ const MyExam = ({ navigation }) => {
   }, [examData]);
 
 
-console.log("examData",examData)
+  // console.log("examData", examData)
   return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
       <StatusBar
@@ -252,6 +252,7 @@ console.log("examData",examData)
                   return (
                     <>
                       <View
+                        key={index}
                         style={{
                           height: responsiveHeight(45),
                           width: responsiveWidth(90),
@@ -467,199 +468,198 @@ console.log("examData",examData)
                 [...examData].sort((a, b) => b.schedule - a.schedule).map((item, index) => {
 
                   return (
-                    <>
+                    <View
+                      key={index}
+                      style={{
+                        height: responsiveHeight(45),
+                        width: responsiveWidth(90),
+                        marginBottom: 10,
+                        paddingHorizontal: 20,
+                        backgroundColor: "#fff",
+                        alignSelf: "center",
+                        marginTop: 20,
+                        borderRadius: 5,
+                        elevation: 10,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          color: "#6A5ADF",
+                          fontWeight: "500",
+                          fontSize: 16,
+                          marginTop: 15,
+                        }}
+                      >
+                        {item.gameNameInEnglish}
+                      </Text>
+                      <Text
+                        style={{
+                          color: "#000",
+                          fontWeight: "500",
+                          fontSize: 14,
+                          marginTop: 5,
+                        }}
+                      >
+                        Rank : #{item?.rank}
+                      </Text>
+
+                      <View
+                        style={{ borderBottomWidth: 0.6, marginTop: 10 }}
+                      ></View>
+
                       <View
                         style={{
-                          height: responsiveHeight(45),
-                          width: responsiveWidth(90),
-                          marginBottom: 10,
-                          paddingHorizontal: 20,
-                          backgroundColor: "#fff",
+                          flexDirection: "row",
+                          justifyContent: "flex-start",
+                          marginTop: 10,
+                        }}
+                      >
+                        <Image
+                          source={require("../images/calender.png")}
+                          style={{
+                            tintColor: "#6A5ADF",
+                            height: responsiveHeight(4),
+                            width: responsiveWidth(8),
+                          }}
+                        />
+
+                        <Text
+                          style={{
+                            alignSelf: "center",
+                            marginLeft: 10,
+                            fontSize: 13,
+                          }}
+                        >
+                          {convertMillisecondsToDateTime(item?.schedule)}
+                        </Text>
+                      </View>
+
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          justifyContent: "flex-start",
+                          marginTop: 10,
+                        }}
+                      >
+                        <Image
+                          source={require("../images/question.png")}
+                          style={{
+                            tintColor: "#6A5ADF",
+                            height: responsiveHeight(4),
+                            width: responsiveWidth(8),
+                          }}
+                        />
+
+                        <Text
+                          style={{
+                            alignSelf: "center",
+                            marginLeft: 10,
+                            fontSize: 13,
+                          }}
+                        >
+                          {item?.Game[0].noOfQuestion} Questions | Time 18 mins
+                        </Text>
+                      </View>
+
+                      <View
+                        style={{
+                          height: responsiveHeight(5),
+                          justifyContent: "center",
+                          borderRadius: 20,
+                          width: responsiveWidth(80),
+                          marginTop: 10,
+                          backgroundColor: "#EDEAFB",
                           alignSelf: "center",
-                          marginTop: 20,
-                          borderRadius: 5,
-                          elevation: 10,
                         }}
                       >
                         <Text
                           style={{
+                            marginLeft: 10,
                             color: "#6A5ADF",
                             fontWeight: "500",
-                            fontSize: 16,
-                            marginTop: 15,
+                            fontSize: 14,
                           }}
                         >
-                          {item.gameNameInEnglish}
+                          Joined : {item?.Game[0].noOfParticipation}
                         </Text>
+                      </View>
+
+                      <View
+                        style={{
+                          height: responsiveHeight(5),
+                          justifyContent: "center",
+                          borderRadius: 20,
+                          width: responsiveWidth(80),
+                          marginTop: 10,
+                          backgroundColor: "#EDEAFB",
+                          alignSelf: "center",
+                        }}
+                      >
                         <Text
                           style={{
-                            color: "#000",
+                            marginLeft: 10,
+                            color: "#6A5ADF",
                             fontWeight: "500",
                             fontSize: 14,
-                            marginTop: 5,
                           }}
                         >
-                          Rank : #{item?.rank}
+                          Joined Fees: {item?.amount}
                         </Text>
-
-                        <View
-                          style={{ borderBottomWidth: 0.6, marginTop: 10 }}
-                        ></View>
-
-                        <View
-                          style={{
-                            flexDirection: "row",
-                            justifyContent: "flex-start",
-                            marginTop: 10,
-                          }}
-                        >
-                          <Image
-                            source={require("../images/calender.png")}
-                            style={{
-                              tintColor: "#6A5ADF",
-                              height: responsiveHeight(4),
-                              width: responsiveWidth(8),
-                            }}
-                          />
-
-                          <Text
-                            style={{
-                              alignSelf: "center",
-                              marginLeft: 10,
-                              fontSize: 13,
-                            }}
-                          >
-                            {formatTimestamp(item?.schedule)}
-                          </Text>
-                        </View>
-
-                        <View
-                          style={{
-                            flexDirection: "row",
-                            justifyContent: "flex-start",
-                            marginTop: 10,
-                          }}
-                        >
-                          <Image
-                            source={require("../images/question.png")}
-                            style={{
-                              tintColor: "#6A5ADF",
-                              height: responsiveHeight(4),
-                              width: responsiveWidth(8),
-                            }}
-                          />
-
-                          <Text
-                            style={{
-                              alignSelf: "center",
-                              marginLeft: 10,
-                              fontSize: 13,
-                            }}
-                          >
-                            {item?.Game[0].noOfQuestion} Questions | Time 18 mins
-                          </Text>
-                        </View>
-
-                        <View
-                          style={{
-                            height: responsiveHeight(5),
-                            justifyContent: "center",
-                            borderRadius: 20,
-                            width: responsiveWidth(80),
-                            marginTop: 10,
-                            backgroundColor: "#EDEAFB",
-                            alignSelf: "center",
-                          }}
-                        >
-                          <Text
-                            style={{
-                              marginLeft: 10,
-                              color: "#6A5ADF",
-                              fontWeight: "500",
-                              fontSize: 14,
-                            }}
-                          >
-                            Joined : {item?.businessDate}
-                          </Text>
-                        </View>
-
-                        <View
-                          style={{
-                            height: responsiveHeight(5),
-                            justifyContent: "center",
-                            borderRadius: 20,
-                            width: responsiveWidth(80),
-                            marginTop: 10,
-                            backgroundColor: "#EDEAFB",
-                            alignSelf: "center",
-                          }}
-                        >
-                          <Text
-                            style={{
-                              marginLeft: 10,
-                              color: "#6A5ADF",
-                              fontWeight: "500",
-                              fontSize: 14,
-                            }}
-                          >
-                            Joined Fees: {item?.amount}
-                          </Text>
-                        </View>
-
-                        <View
-                          style={{
-                            flexDirection: "row",
-                            justifyContent: "space-between",
-                          }}
-                        >
-                          <TouchableOpacity
-                            style={{
-                              height: responsiveHeight(4.8),
-                              justifyContent: "center",
-                              borderRadius: 25,
-                              width: responsiveWidth(38),
-                              marginTop: 20,
-                              backgroundColor: "#6A5AE0",//{item?.Game[0].noOfQuestion}
-                            }}
-                            onPress={() => navigation.navigate("LeaderboardRank", { QuestionNo: (item?.Game[0].noOfQuestion) })}
-                          >
-                            <Text
-                              style={{
-                                color: "#fff",
-                                fontWeight: "400",
-                                alignSelf: "center",
-                                fontSize: 16,
-                              }}
-                            >
-                              Leaderboard
-                            </Text>
-                          </TouchableOpacity>
-
-                          <TouchableOpacity
-                            style={{
-                              height: responsiveHeight(4.8),
-                              justifyContent: "center",
-                              borderRadius: 25,
-                              width: responsiveWidth(38),
-                              marginTop: 20,
-                              backgroundColor: "#6A5AE0",
-                            }}
-                            onPress={() => navigation.navigate("MyQuestions", { QuestionNo: (item?.Game[0].noOfQuestion) })}
-                          >
-                            <Text
-                              style={{
-                                color: "#fff",
-                                fontWeight: "400",
-                                alignSelf: "center",
-                                fontSize: 16,
-                              }}
-                            >
-                              Show Result
-                            </Text>
-                          </TouchableOpacity>
-                        </View>
                       </View>
-                    </>
+
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <TouchableOpacity
+                          style={{
+                            height: responsiveHeight(4.8),
+                            justifyContent: "center",
+                            borderRadius: 25,
+                            width: responsiveWidth(38),
+                            marginTop: 20,
+                            backgroundColor: "#6A5AE0",//{item?.Game[0].noOfQuestion}
+                          }}
+                          onPress={() => navigation.navigate("WinnerDetail", { gameid: item?.gameId, noOfQue: item?.Game[0].noOfQuestion })}
+                        >
+                          <Text
+                            style={{
+                              color: "#fff",
+                              fontWeight: "400",
+                              alignSelf: "center",
+                              fontSize: 16,
+                            }}
+                          >
+                            Leaderboard
+                          </Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                          style={{
+                            height: responsiveHeight(4.8),
+                            justifyContent: "center",
+                            borderRadius: 25,
+                            width: responsiveWidth(38),
+                            marginTop: 20,
+                            backgroundColor: "#6A5AE0",
+                          }}
+                          onPress={() => navigation.navigate("AllLeaderboard", { gameid: item?.gameId, noOfQue: item?.Game[0].noOfQuestion })}
+                        >
+                          <Text
+                            style={{
+                              color: "#fff",
+                              fontWeight: "400",
+                              alignSelf: "center",
+                              fontSize: 16,
+                            }}
+                          >
+                            Show Result
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
                   );
                 })
               ) : (

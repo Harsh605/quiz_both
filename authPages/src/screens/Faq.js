@@ -1,25 +1,16 @@
-import { View, Text, TouchableOpacity, Image, ScrollView,RefreshControl } from 'react-native'
+import { View, Text, TouchableOpacity, Image, ScrollView, RefreshControl } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { AntDesign } from '@expo/vector-icons';
 import { responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions'
-import { } from 'react-native-gesture-handler';
 import { base_url } from './Base_url';
 
 const Faq = ({ navigation }) => {
-    const [open, setOpen] = useState(false);
-    const [open2, setOpen2] = useState(false);
-    const [open3, setOpen3] = useState(false);
-
-    const [mydata, setMydata] = useState([{}])
-
+    const [faqStates, setFaqStates] = useState({});
+    const [mydata, setMydata] = useState([]);
     const [refreshing, setRefreshing] = useState(false);
 
-    
-
     const faqApi = (n) => {
-        alert(n)
         try {
-
             var requestOptions = {
                 method: 'GET',
                 redirect: 'follow'
@@ -36,25 +27,32 @@ const Faq = ({ navigation }) => {
                 .catch(error => console.log('error', error));
 
         } catch (error) {
-
+            console.log(error);
         }
     }
+
+    const toggleFaq = (index) => {
+        setFaqStates(prevState => ({
+            ...prevState,
+            [index]: !prevState[index]
+        }));
+    };
 
     const onRefresh = React.useCallback(() => {
         setRefreshing(true);
         setTimeout(() => {
-            faqApi()
-          setRefreshing(false);
+            faqApi();
+            setRefreshing(false);
         }, 2000);
-      }, []);
+    }, []);
 
     useEffect(() => {
-        onRefresh
-        faqApi();
-       
-    }, [])
+        onRefresh();
+    }, []);
 
-    console.log(mydata, 'mydata');
+    useEffect(() => {
+        faqApi();
+    }, [refreshing]);
 
     return (
         <View style={{ flex: 1, backgroundColor: '#fff' }}>
@@ -68,49 +66,37 @@ const Faq = ({ navigation }) => {
                 </View>
             </View>
 
-            
-
-            <ScrollView style={{marginBottom:20}} refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }>
-
-                {
-                    mydata?.length > 0 ? (mydata.map((data,n) => {
-                        console.log(data, 'datatata');
-                        return (
-                            <>
-                                <TouchableOpacity  style={{ height: open == 0 ? responsiveHeight(9) : responsiveHeight(30), width: responsiveWidth(90), borderColor: '#6A5AE0', borderWidth: 1,paddingHorizontal:10, borderRadius: 5, alignSelf: 'center', marginTop: 20 }}
-                                    onPress={() => setOpen(!open)}>
-                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 20, marginTop: '6%' }}>
-                                        <Text style={{ alignSelf: 'center', fontWeight: '500' }}>{data?.question}</Text>
-                                        <Image source={require('../images/plus.png')} style={{ height: responsiveHeight(3.5), width: responsiveWidth(7), tintColor: '#6A5AE0' }} />
-
-                                    </View>
-
-                                    <View style={{ borderBottomWidth:open==1 ? 1 :0, borderColor: '#6A5AE0',marginTop:'4%' }}></View>
-                                    {
-                                        open == 1 ? (<>
-                                            <Text style={{ alignSelf: 'center', fontWeight: '400', marginTop: 20 }}>{data?.answer}</Text>
-
-                                        </>)
-                                            : (null)
-                                    }
-                                </TouchableOpacity>
-                            </>
-                        )
-                    })) :
-                        (
-                            <Text style={{ textAlign: 'center', color: 'red', justifyContent: 'center', fontFamily: 'Jaldi-Regular', alignItems: 'center', borderColor: 'red', borderRadius: 10, marginVertical: 20, marginHorizontal: 20, paddingVertical: 20, fontSize: 18 }}>No data found</Text>
-
-                        )
-
-                }
+            <ScrollView style={{ marginBottom: 20 }} refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }>
+                {mydata?.length > 0 ? (
+                    mydata.map((data, index) => (
+                        <TouchableOpacity key={index} style={{ marginBottom: 20 }} onPress={() => toggleFaq(index)}>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 20, marginTop: '5%' }}>
+                                <Text style={{ alignSelf: 'center', fontWeight: '500' }}>{data?.question}</Text>
+                                <Image
+                                    source={faqStates[index] ? require('../images/crosss.png') : require('../images/plus.png')}
+                                    style={{
+                                        height: responsiveHeight(faqStates[index] ? 3.5 : 3.5), // Adjust height based on the state
+                                        width: responsiveWidth(faqStates[index] ? 3.5 : 3.5),
+                                        tintColor: '#6A5AE0'
+                                    }}
+                                />
 
 
+
+
+                            </View>
+                            <View style={{ paddingVertical: 5, borderBottomWidth: faqStates[index] ? 0.9 : 0, borderColor: '#6A5AE0', marginTop: '10' }}></View>
+                            {faqStates[index] && <Text style={{ paddingHorizontal: 15, fontWeight: '400', marginTop: 20 }}>{data?.answer}</Text>}
+                        </TouchableOpacity>
+                    ))
+                ) : (
+                    <Text style={{ textAlign: 'center', color: 'red', justifyContent: 'center', fontFamily: 'Jaldi-Regular', alignItems: 'center', borderColor: 'red', borderRadius: 10, marginVertical: 20, marginHorizontal: 20, paddingVertical: 20, fontSize: 18 }}>No data found</Text>
+                )}
             </ScrollView>
-
         </View>
-    )
-}
+    );
+};
 
-export default Faq
+export default Faq;

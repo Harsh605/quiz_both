@@ -42,6 +42,7 @@ const SignupScreen = ({ navigation }) => {
     const [mobile, setMobile] = useState('')
     const [password, setPassword] = useState('')
     const [coPass, setCoPass] = useState('')
+    const [referCode, setReferCode] = useState('')
 
 
 
@@ -187,6 +188,12 @@ const SignupScreen = ({ navigation }) => {
                 <TextInput require placeholder='Your Email' value={email} onChangeText={(text) => { setEmail(text) }} style={{ marginLeft: 15, fontWeight: '400', fontSize: 14, marginTop: 8 }} />
             </View>
 
+            <Text style={{ fontSize: 18, fontWeight: '500', color: '#000', marginTop: 20, marginHorizontal: 20 }}>Mobile</Text>
+
+            <View style={{ borderWidth: 1, height: responsiveHeight(6), alignSelf: 'center', borderRadius: 5, borderColor: '#A0A0A0', width: responsiveWidth(90), marginTop: 5 }}>
+                <TextInput require placeholder='Your Mobile Number' inputMode='numeric' maxLength={10} value={mobile} onChangeText={(text) => { setMobile(text) }} style={{ marginLeft: 15, fontWeight: '400', fontSize: 14, marginTop: 8 }} />
+            </View>
+            
             <Text style={{ fontSize: 18, fontWeight: '500', color: '#000', marginTop: 20, marginHorizontal: 20 }}>Mobile</Text>
 
             <View style={{ borderWidth: 1, height: responsiveHeight(6), alignSelf: 'center', borderRadius: 5, borderColor: '#A0A0A0', width: responsiveWidth(90), marginTop: 5 }}>

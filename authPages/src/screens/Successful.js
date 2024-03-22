@@ -3,13 +3,13 @@ import React from 'react';
 import efs from "../images/7efs.gif";
 import { Button } from 'react-native-paper';
 
-const Successful = ({navigation}) => {
+const Successful = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Image source={efs} style={styles.image} />
-      <Text style={styles.text}>Operation Successful!</Text>
-      <Button mode="contained" onPress={() => {navigation.navigate("LeaderboardRank")}}>
-      Leaderboard
+      <Text style={styles.text}>Exam Completed!</Text>
+      <Button mode="contained" onPress={() => { navigation.navigate("MyExam") }}>
+        Leaderboard
       </Button>
     </View>
   );

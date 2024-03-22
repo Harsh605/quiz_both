@@ -5,19 +5,24 @@ import { useDispatch, useSelector } from "react-redux";
 import { responsiveFontSize, responsiveHeight, responsiveWidth, } from "react-native-responsive-dimensions";
 import { myProfile, pdowinLogo } from "../../slices/userSlice";
 
-const Topbar = ({navigation}) => {
+const Topbar = ({ navigation }) => {
     const dispatch = useDispatch()
-    const { myProfileData,brandLogo } = useSelector((state) => state.userCustom)
+    const { myProfileData, brandLogo } = useSelector((state) => state.userCustom)
 
     useEffect(() => {
         dispatch(pdowinLogo())
     }, [dispatch])
-    
+
+    useEffect(() => {
+        dispatch(myProfile())
+    }, [dispatch])
+
+
     return (
         <>
             <TouchableOpacity onPress={() => navigation.openDrawer()}>
                 {
-                    !(myProfileData?.user[0].avatar) ?
+                    !(myProfileData?.user[0]?.avatar) ?
                         <Image
                             source={require('../images/user.jpg')}
                             style={{
@@ -30,7 +35,7 @@ const Topbar = ({navigation}) => {
                         />
                         :
                         <Image
-                            source={{ uri: `https://quiz.metablocktechnologies.org/uploads/${myProfileData?.user[0].avatar}` }}
+                            source={{ uri: `https://quiz.metablocktechnologies.org/uploads/${myProfileData?.user[0]?.avatar}` }}
                             style={{
                                 height: responsiveHeight(6),
                                 width: responsiveWidth(12),

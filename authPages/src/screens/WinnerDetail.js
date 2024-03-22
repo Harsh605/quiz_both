@@ -13,12 +13,22 @@ const WinnerDetail = ({ navigation, route }) => {
     const gameId = route.params?.gameid || null;
     const noOfQue = route.params?.noOfQue || null;
 
+    console.log("gameId..............",gameId)
+
+
+
     const [filterText, setFilterText] = useState("");
     const { winnerPageLeadersboardData } = useSelector((state) => state.examCustom)
 
     useEffect(() => {
-        dispatch(winnerPageLeadersboard({ name: filterText, gameId }))
-    }, [dispatch, filterText]);
+        console.log("asdasd")
+        dispatch(winnerPageLeadersboard({ name: "", gameId }))
+    }, [dispatch]);
+
+    const filteredData = winnerPageLeadersboardData?.filter((item) =>
+        item.User[0].name.toLowerCase().includes(filterText.toLowerCase()) ||
+        item.User[0].id.toLowerCase().includes(filterText.toLowerCase())
+    );
 
 
     return (
@@ -184,12 +194,13 @@ const WinnerDetail = ({ navigation, route }) => {
                     </View>
 
                     {
-                        winnerPageLeadersboardData?.map((res) => {
+                        filteredData?.map((res, index) => {
                             console.log(res, "rom");
                             // console.log(res.User[0].id,"resId");
                             return (
                                 <>
                                     <TouchableOpacity
+                                        key={index}
                                         style={{
                                             flexDirection: "row",
                                             justifyContent: "space-between",
@@ -201,13 +212,13 @@ const WinnerDetail = ({ navigation, route }) => {
                                             backgroundColor: "#EDEAFB",
                                             alignSelf: "center",
                                         }}
-                                        onPress={() => navigation.navigate("AllQuestion", { gameId: gameId, id: (res.User[0].id),noOfQue })}
+                                        onPress={() => navigation.navigate("AllQuestion", { gameId: gameId, id: (res.User[0]._id), noOfQue })}
                                     >
                                         <Text style={{ alignSelf: "center", color: "#6A5AE0", flex: 0.25 }}>{res?.rank}</Text>
                                         <Text style={{ alignSelf: "center", color: "#000", flex: 0.25 }}>{res.User[0].name}</Text>
                                         <Text style={{ alignSelf: "center", color: "#000", flex: 0.25, marginRight: 10 }}>{res.User[0].id}</Text>
 
-                                        <Text style={{ alignSelf: "center", color: "green", flex: 0.20 }}>{res.wonAmount}</Text>
+                                        <Text style={{ alignSelf: "center", color: "green", flex: 0.20 }}>{res?.wonAmount > 0 ? res?.wonAmount+"₹" :res?.wonAmount  }</Text>
 
 
                                         <Text

@@ -18,7 +18,7 @@ const Sidebar = ({ navigation }) => {
     }
     useEffect(() => {
         dispatch(myProfile())
-    }, [])
+    }, [dispatch])
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: '#6A5AE0' }}>
             <StatusBar translucent={true} barStyle={'light-content'} backgroundColor={'#6A5AE0'} />
@@ -27,7 +27,7 @@ const Sidebar = ({ navigation }) => {
 
                 <View style={{ flexDirection: 'row', justifyContent: 'flex-start', marginHorizontal: 20, marginTop: 40 }}>
                     {
-                        !(myProfileData?.user[0].avatar) ?
+                        !(myProfileData?.user[0]?.avatar) ?
                             <Image
                                 source={require('../images/user.jpg')}
                                 style={{

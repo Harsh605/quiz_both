@@ -175,10 +175,10 @@ const MyQuestions = ({ navigation, props }) => {
                 <View style={{ height: responsiveHeight(32), width: responsiveWidth(90), marginBottom: 10, paddingHorizontal: 20, backgroundColor: '#fff', alignSelf: 'center', marginTop: 10, borderRadius: 8, elevation: 10 }}>
                     <Text style={{ marginTop: 20, fontSize: 17, fontWeight: '500', color: '#000' }}>Q. {mydata}</Text>
 
-                    {question?.map((res) => {
+                    {question?.map((res,index) => {
                         return (
                             <>
-                                <View style={{ marginTop: 10, flexDirection: 'row', marginRight: 20 }}>
+                                <View  key={index} style={{ marginTop: 10, flexDirection: 'row', marginRight: 20 }}>
                                     <TouchableOpacity style={{ height: responsiveHeight(3.5), marginRight: 10, backgroundColor: select == 0 ? '#6A5AE0' : '#fff', width: responsiveWidth(7), borderWidth: 1, borderRadius: 100, justifyContent: 'center' }}
                                         onPress={() => setSelect(0)}>
                                         <Text style={{ alignSelf: 'center', fontWeight: '600', fontSize: 18, color: select == 0 ? '#fff' : '#6A5AE0' }}>{res.id}</Text>

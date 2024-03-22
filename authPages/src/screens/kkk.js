@@ -3,7 +3,7 @@ import React from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import RazorpayCheckout from 'react-native-razorpay';
-const kkk = () => {
+const Kkk = () => {
 
   return (
     <SafeAreaView  >
@@ -18,6 +18,6 @@ const kkk = () => {
   )
 }
 
-export default kkk
+export default Kkk
 
 const styles = StyleSheet.create({})

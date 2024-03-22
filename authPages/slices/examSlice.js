@@ -53,26 +53,39 @@ export const winnerPageAllExams = createAsyncThunk(
     }
 );
 
+
+
 export const winnerPageLeadersboard = createAsyncThunk(
     'winnerPageLeadersboard',
     async ({ name, gameId }, thunkAPI) => {
-        console.log(name, "gameId....................................", gameId)
+        console.log("first..............", name);
         try {
             const token = await AsyncStorage.getItem('token');
-            console.log("token", token)
-            const config = {
-                headers: {
-                    'Content-Type': 'application/multipart/form-data',
-                    'Authorization': token,
-                }
+            console.log("token", token);
+
+            const myHeaders = new Headers();
+            myHeaders.append('Authorization', token);
+            myHeaders.append('Content-Type', 'application/json');
+
+            const raw = JSON.stringify({
+                gameId: gameId
+            });
+
+            const requestOptions = {
+                method: 'POST',
+                headers: myHeaders,
+                body: raw,
+                redirect: 'follow',
             };
 
-            const url = `https://quiz.metablocktechnologies.org/api/quiz-leadership?name=${name}`;
-            const response = await axios.post(url, gameId, config);
-            console.log("response...............................", response.data)
-            return response.data.data.gameLeadership[0].UserGame;
+            const url = `https://quiz.metablocktechnologies.org/api/quiz-leadership`;
+            const response = await fetch(url, requestOptions);
+            const data = await response.json();
+            console.log(data.data.gameLeadership[0])
+            return data.data.gameLeadership;
         } catch (error) {
-            return console.log("error", error.message)
+            console.error("error", error);
+            throw error; // Re-throw the error to let Redux Toolkit handle it properly
         }
     }
 );
@@ -80,7 +93,8 @@ export const winnerPageLeadersboard = createAsyncThunk(
 export const winnersListPageAllDataOfAUserForParticularExam = createAsyncThunk(
     'winnersListPageAllDataOfAUserForParticularExam',
     async ({ que_no, gameId, userId }, thunkAPI) => {
-        console.log(que_no, "gameIiid....................................", gameId)
+        // const gameId = "65f30a5f64c69b9ffa5c05ee"
+        console.log("que_no, gameId, userId ", que_no, gameId, userId)
         try {
             const token = await AsyncStorage.getItem('token');
             console.log("token", token)
@@ -90,19 +104,24 @@ export const winnersListPageAllDataOfAUserForParticularExam = createAsyncThunk(
                     'Authorization': token,
                 }
             };
-            const que = 1
-            const game = "659c3fdd9b22fdcebbdd7e88"
-            // const url = `https://quiz.metablocktechnologies.org/api/quiz-result?gameId=${gameId}&q_no=${que_no}`;
-            const url = `https://quiz.metablocktechnologies.org/api/quiz-result?gameId=${gameId}&q_no=${que_no}&userId=${userId}`;
-            // const url = `https://quiz.metablocktechnologies.org/api/quiz-result?gameId=${gameId}&q_no=${que_no}`;
+            let url;
+            console.log("userId.....................................",userId)
+            if (userId) {
+                url = `https://quiz.metablocktechnologies.org/api/quiz-result?gameId=${gameId}&q_no=${que_no}&userId=${userId}`;
+            }
+            else {
+                url = `https://quiz.metablocktechnologies.org/api/quiz-result?gameId=${gameId}&q_no=${que_no}`;
+            }
             const response = await axios.get(url, config);
-            console.log("response...............................", response.data)
-            return response.data.data.gameQuestion[0];
+            console.log("harsh...............................", response.data.data.gameQuestion)
+            return response.data.data.gameQuestion;
         } catch (error) {
-            return console.log("error", error.message)
+            return console.error("error", error.message);
         }
     }
 );
+
+
 
 export const correctPercentPageAllExams = createAsyncThunk(
     'correctPercentPageAllExams',

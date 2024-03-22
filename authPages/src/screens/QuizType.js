@@ -100,7 +100,7 @@ const QuizType = ({ navigation, route }) => {
                 .then(response => response.json())
                 .then(result => {
                     if (result.success == true) {
-                        console.log(result,"resultt")
+                        console.log(result, "resultt")
                         navigation.navigate('MyExam')
                     }
                     else {
@@ -165,18 +165,18 @@ const QuizType = ({ navigation, route }) => {
                         </View>
 
                         {
-                            mydata?.length > 0 ? (mydata?.map((item) => {
+                            mydata?.length > 0 ? (mydata?.map((item, index) => {
                                 // console.log(item, "datainline");
 
                                 return (
                                     <>
-                                        <View>
+                                        <View key={index}>
                                             <View>
                                                 <Text style={{ color: '#000', fontSize: 16, marginHorizontal: 20, marginTop: 10, color: '#8A8A8A' }}>Prize Pool</Text>
                                                 {/* <Text style={{ color: '#000', marginHorizontal: 20 }}>{formatTimestamp(item.schedule)}</Text> */}
 
 
-                                                <Text style={{ color: '#000', fontSize: 20, marginHorizontal: 20, marginTop: 7, color: '#000', fontWeight: '500' }}>₹ {amount * joinedMembers}</Text>
+                                                <Text style={{ color: '#000', fontSize: 20, marginHorizontal: 20, marginTop: 7, color: '#000', fontWeight: '500' }}>₹ {amount * item?.UserGame?.length}</Text>
 
 
                                                 <View style={{ backgroundColor: 'fff', justifyContent: 'center', alignItems: 'center' }}>
@@ -187,8 +187,8 @@ const QuizType = ({ navigation, route }) => {
                                                         minimumTrackTintColor='#516AC4'
                                                         maximumTrackTintColor='#516AC4'
                                                         step={1}
-                                                        maximumValue={item?.pricePool}
-                                                        value={amount * joinedMembers}
+                                                        maximumValue={amount * item.noOfParticipation}
+                                                        value={amount * (item?.UserGame?.length)}
                                                         disabled
                                                         onValueChange={(value) => setSliderValue(value)}
                                                     />
@@ -245,10 +245,10 @@ const QuizType = ({ navigation, route }) => {
                                                             </View>
 
                                                             {
-                                                                item?.GamePool[0]?.pool?.map((res) => {
+                                                                item?.GamePool[0]?.pool?.map((res, index) => {
                                                                     return (
                                                                         <>
-                                                                            <View style={{ marginHorizontal: 10, flexDirection: 'row', marginTop: 10, justifyContent: 'space-between' }}>
+                                                                            <View key={index} style={{ marginHorizontal: 10, flexDirection: 'row', marginTop: 10, justifyContent: 'space-between' }}>
                                                                                 <Text style={{ fontSize: 14, fontWeight: '400', marginLeft: 10 }}>{res?.from}</Text>
                                                                                 <Text style={{ fontSize: 14, fontWeight: '400', marginRight: 10 }}>₹{res?.amount}</Text>
                                                                             </View>
@@ -278,10 +278,10 @@ const QuizType = ({ navigation, route }) => {
                                                             <View style={{ borderBottomWidth: 0.6, marginHorizontal: 10, marginTop: 7, marginBottom: 1, borderColor: '#8A8A8A' }}></View>
 
                                                             {
-                                                                item?.UserGame[0]?.User?.map((res) => {
+                                                                item?.UserGame[0]?.User?.map((res, index) => {
                                                                     return (
                                                                         <>
-                                                                            <View style={{ flexDirection: 'row', justifyContent: 'flex-start', marginHorizontal: 20 }}>
+                                                                            <View key={index} style={{ flexDirection: 'row', justifyContent: 'flex-start', marginHorizontal: 20 }}>
                                                                                 <Image source={require('../images/quiz_banner.jpeg')} style={{ height: responsiveHeight(6), marginRight: '17%', width: responsiveWidth(12), borderRadius: 100, alignSelf: 'flex-start', marginHorizontal: 20, marginTop: 3 }} />
                                                                                 <Text style={{ alignSelf: 'center', marginLeft: 20, flex: 0.8 }}>{res?.name}</Text>
                                                                                 <Text style={{ alignSelf: 'center', marginLeft: 20 }}>{res?.id}</Text>

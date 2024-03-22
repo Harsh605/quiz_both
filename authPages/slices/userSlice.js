@@ -60,6 +60,73 @@ export const myProfile = createAsyncThunk(
         }
     }
 );
+export const updateProfile = createAsyncThunk(
+    'updateGameLanguage',
+    async ({ formData }, thunkAPI) => {
+        console.log("first..............");
+        try {
+            const token = await AsyncStorage.getItem('token');
+            console.log("token", token);
+
+            const myHeaders = new Headers();
+            myHeaders.append('Authorization', token);
+            myHeaders.append('Content-Type', 'multipart/form-data');
+
+
+
+            const requestOptions = {
+                method: 'POST',
+                headers: myHeaders,
+                body: formData,
+                redirect: 'follow',
+            };
+
+            const url = `https://quiz.metablocktechnologies.org/api/edit-profile`;
+            const response = await fetch(url, requestOptions);
+            const data = await response.json();
+            console.log("data.....................................................", data)
+            return data;
+        } catch (error) {
+            console.error("error", error);
+            throw error; // Re-throw the error to let Redux Toolkit handle it properly
+        }
+    }
+);
+export const updateKyc = createAsyncThunk(
+    'updateKyc',
+    async ({ formData }, thunkAPI) => {
+        console.log("first..............");
+        try {
+            const token = await AsyncStorage.getItem('token');
+            console.log("token", token);
+
+            const myHeaders = new Headers();
+            myHeaders.append('Authorization', token);
+            // myHeaders.append('Content-Type', 'multipart/form-data');
+
+
+
+
+            const requestOptions = {
+                method: 'POST',
+                headers: myHeaders,
+                body: formData,
+                redirect: 'follow',
+            };
+
+            const url = `http://192.168.175.239/api/upload-kyc`;
+            const response = await fetch(url, requestOptions);
+            const data = await response.json();
+            console.log("data.....................................................", data)
+            return data;
+        } catch (error) {
+            console.error("error..................................", error);
+            throw error; // Re-throw the error to let Redux Toolkit handle it properly
+        }
+    }
+);
+
+
 
 export const allOnGoingExams = createAsyncThunk(
     'allOnGoingExams',
@@ -203,16 +270,7 @@ export const updatePassword = createAsyncThunk("updatePassword", async ({ oldPas
 
 
 })
-export const updateProfile = createAsyncThunk("updateProfile", async ({ name, email, avatar }) => {
-    let url = `${baseUrl}/api/v1/me/Update`
-    const config = { headers: { "Content-Type": "application/multipart/form-data" }, withCredentials: true };
-    try {
-        const response = await axios.put(url, { name, email, avatar }, config)
-        return response.data
-    } catch (error) {
-        return error.response.data.error
-    }
-})
+
 
 export const getAllUsers = createAsyncThunk("getAllUsers", async () => {
 
@@ -300,7 +358,10 @@ export const userSlice = createSlice({
         myProfileData: null,
         socialLinks: null,
         brandLogo: null,
-        activeTabState: 'Home'
+        activeTabState: 'Home',
+        isProfileUpdate: false,
+        isKycUpdate: false,
+        isKycLoading: false
     },
     extraReducers: (builder) => {
         builder
@@ -398,14 +459,26 @@ export const userSlice = createSlice({
             })
             .addCase(updateProfile.fulfilled, (state, action) => {
                 state.isLoading = false
-                state.isUpdated = action.payload.success
+                state.isProfileUpdate = true
 
             })
             .addCase(updateProfile.rejected, (state, action) => {
                 state.error = action.error
-                state.isUpdated = action.payload.success
+                state.isProfileUpdate = false
                 state.isLoading = false
 
+            })
+            .addCase(updateKyc.pending, (state) => {
+                state.isKycLoading = true
+            })
+            .addCase(updateKyc.fulfilled, (state, action) => {
+                state.isKycLoading = false;
+                state.isKycUpdate = true;
+            })
+            .addCase(updateKyc.rejected, (state, action) => {
+                state.error = action.error; // Set error state or handle it appropriately
+                state.isKycUpdate = false;
+                state.isKycLoading = false;
             })
 
             .addCase(deleteUser.pending, (state) => {

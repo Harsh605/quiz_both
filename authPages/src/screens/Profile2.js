@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, TextInput, Image, ScrollView, ActivityIndicator, Alert } from 'react-native'
+import { View, Text, TouchableOpacity, TextInput, Image, ScrollView, ActivityIndicator } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { AntDesign } from '@expo/vector-icons';
 import { responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions'
@@ -10,40 +10,34 @@ import { Permissions } from 'expo';
 import { base_url } from './Base_url';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
-import { useDispatch, useSelector } from 'react-redux';
-import { myProfile, updateProfile } from '../../slices/userSlice';
 
 
 
-const Profile = ({ navigation }) => {
+const Profile2 = ({ navigation }) => {
+    const [selectedImage, setSelectedImage] = useState(null);
 
-    const dispatch = useDispatch()
-    const { myProfileData, isProfileUpdate } = useSelector((state) => state.userCustom)
+    const [indicator2, setIndicator2] = useState(true)
 
-
-    const [name, setName] = useState(myProfileData?.user[0]?.name);
-    const [email, setEmail] = useState(myProfileData?.user[0]?.email)
-    const [registration, setRegistration] = useState(myProfileData?.user[0]?.id);
-    const [mobile, setMobile] = useState(myProfileData?.user[0]?.mobile);
-    const [address, setAddress] = useState(myProfileData?.user[0]?.street_address)
-    const [city, setCity] = useState(myProfileData?.user[0]?.city)
-    const [state, setState] = useState(myProfileData?.user[0]?.state)
-    const [pincode, setPincode] = useState(myProfileData?.user[0]?.pincode)
-    const [kycStatus, setKycStatus] = useState(myProfileData?.user[0]?.kyc || 0)
-    const [profilePic, setProfilePic] = useState(myProfileData?.user[0]?.avatar);
-    const [buttonLoading, setButtonLoading] = useState(true)
-
-
-    const [imgs, setImgs] = useState("")
+    const [myname, setMyname] = useState(myProfileData);
+    const [registration, setRegistration] = useState(null);
+    const [mobile, setMobile] = useState(null);
+    const [email, setEmail] = useState(null)
+    const [adress, setAdress] = useState(null)
+    const [city, setCity] = useState(null)
+    const [state, setState] = useState(null)
+    const [pincode, setPincode] = useState(null)
+    const [imgs, setimgs] = useState("")
+    const [status, setStatus] = useState("")
 
 
 
-    const getPermissions = async () => {
-        const { kycStatus } = await Permissions.askAsync([Permissions.CAMERA, Permissions.MEDIA_LIBRARY]);
-        if (kycStatus !== 'granted') {
+    async function getPermissions() {
+        const { status } = await Permissions.askAsync([Permissions.CAMERA, Permissions.MEDIA_LIBRARY]);
+        if (status !== 'granted') {
             console.log('Permission denied!');
         }
     }
+
     useEffect(() => {
         getPermissions();
     }, []);
@@ -58,37 +52,109 @@ const Profile = ({ navigation }) => {
 
         if (!result.cancelled) {
             console.log(result.assets[0].uri);
-            setProfilePic(result.assets[0].uri);
+            setSelectedImage(result.assets[0].uri);
         }
     };
-    const updateProfileFunc = () => {
-        const formData = new FormData();
-        formData.append('name', name);
-        formData.append('street_address', address);
-        formData.append('city', city);
-        formData.append('state', state);
-        formData.append('pincode', pincode);
-        formData.append("avatar", {
-            uri: profilePic,
-            type: "image/jpeg",
-            name: "avatar.jpg",
-        });
 
-        dispatch(updateProfile({ formData })).then(() => {
-            if (isProfileUpdate) {
-                alert("Profile Updated")
-                dispatch(myProfile())
-            }
-        });
+    const update = async () => {
+        try {
+            setIndicator2(false)
+
+            var myHeaders = new Headers();
+            myHeaders.append("Authorization", `${await AsyncStorage.getItem('token')}`);
+
+            var formdata = new FormData();
+            formdata.append("avatar", {
+                uri: selectedImage,
+                name: "avatar.jpg", // You can customize the file name
+                type: "image/jpeg", // Adjust the file type if needed
+            });
+            formdata.append("name", myname);
+
+            var requestOptions = {
+                method: 'POST',
+                headers: myHeaders,
+                body: formdata,
+                redirect: 'follow'
+            };
+
+            fetch(`${base_url}/create-profile`, requestOptions)
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success == true) {
+                        // console.log(result.data,"profile data");
+                        Toast.show({
+                            type: 'success',
+                            text1: `${result.message}`,
+                            visibilityTime: 2000,
+                            autoHide: true,
+                        });
+                        setIndicator2(true)
+
+
+                    } else {
+                        Toast.show({
+                            type: 'error',
+                            text1: `${result.message}`,
+                            visibilityTime: 2000,
+                            autoHide: true,
+                        });
+                        setIndicator2(true)
+
+                    }
+                })
+                .catch(error => console.log('error', error), setIndicator2(false));
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setIndicator2(false);
+        }
+    };
+
+    const profileApi = async () => {
+        try {
+            var myHeaders = new Headers();
+            myHeaders.append("Authorization", `${await AsyncStorage.getItem('token')}`);
+            // alert(`${await AsyncStorage.getItem("token")}`)
+
+            var requestOptions = {
+                method: 'GET',
+                headers: myHeaders,
+                redirect: 'follow'
+            };
+
+            fetch(`${base_url}/getProfile`, requestOptions)
+                .then(response => response.json())
+                .then(async result => {
+                    console.log(JSON.stringify(result));
+                    // alert(result.data.user[0].state)
+                    if (result.success == true) {
+                        setMyname(result.data.user[0].name)
+                        setRegistration(result.data.user[0].id)
+                        setMobile(result.data.user[0].mobile)
+                        setEmail(result.data.user[0].email)
+                        setAdress(result.data.user[0].street_address)
+                        setCity(result.data.user[0].city)
+                        setState(result.data.user[0].state)
+                        setPincode(result.data.user[0].pincode)
+                        setimgs(result.data.user[0].avatar)
+                        setStatus(result.data.user[0].isVerified)
+                        await AsyncStorage.setItem("pr", `https://quiz.metablocktechnologies.org/uploads/${result.data.user[0].avatar}`)
+                        await AsyncStorage.setItem("names", result.data.user[0].name)
+                        await AsyncStorage.setItem("email", result.data.user[0].email)
+                    }
+                })
+                .catch(error => console.log('error', error));
+
+        } catch (error) {
+
+        }
     }
 
 
     useEffect(() => {
-        dispatch(myProfile())
-    }, [dispatch])
-
-    console.log(myProfileData)
-
+        profileApi()
+    }, [])
     return (
         <SafeAreaView>
 
@@ -109,7 +175,7 @@ const Profile = ({ navigation }) => {
 
                 <TouchableOpacity style={{ marginTop: 20 }} onPress={pickImage}>
 
-                    {profilePic ? <Image source={{ uri: `https://quiz.metablocktechnologies.org/uploads/${profilePic}` }} style={{ height: responsiveHeight(8), width: responsiveWidth(16), borderRadius: 100, alignSelf: 'center', marginTop: 3 }} /> :
+                    {selectedImage ? <Image source={{ uri: selectedImage }} style={{ height: responsiveHeight(8), width: responsiveWidth(16), borderRadius: 100, alignSelf: 'center', marginTop: 3 }} /> :
                         <TouchableOpacity onPress={pickImage} style={{ borderWidth: 2.5, borderColor: '#000', height: responsiveHeight(9), width: responsiveWidth(18), borderRadius: 100, alignSelf: 'center' }}
                         >
                             <Image source={{
@@ -127,7 +193,7 @@ const Profile = ({ navigation }) => {
                 <Text style={{ fontSize: 18, fontWeight: '500', marginTop: 30, marginHorizontal: 20 }}>Full Name</Text>
 
                 <View style={{ borderWidth: 1, height: responsiveHeight(6), alignSelf: 'center', borderRadius: 10, borderColor: '#A0A0A0', width: responsiveWidth(90), marginTop: 5 }}>
-                    <TextInput require placeholder='Your Name' editable={true} value={name} onChangeText={(text) => { setName(text) }} style={{ color: '#000', marginLeft: 15, fontWeight: '400', fontSize: 14, marginTop: 8 }} />
+                    <TextInput require placeholder='Your Name' editable={false} value={myname} onChangeText={(text) => { setMyname(text) }} style={{ color: '#000', marginLeft: 15, fontWeight: '400', fontSize: 14, marginTop: 8 }} />
                 </View>
 
 
@@ -155,7 +221,7 @@ const Profile = ({ navigation }) => {
                 <Text style={{ fontSize: 18, fontWeight: '500', marginTop: 30, marginHorizontal: 20 }}>Address</Text>
 
                 <View style={{ borderWidth: 1, height: responsiveHeight(6), alignSelf: 'center', borderRadius: 10, borderColor: '#A0A0A0', width: responsiveWidth(90), marginTop: 5 }}>
-                    <TextInput require placeholder='Address' value={address} onChangeText={(text) => { setAddress(text) }} style={{ color: "#000", marginLeft: 15, fontWeight: '400', fontSize: 14, marginTop: 8 }} />
+                    <TextInput require placeholder='Address' value={adress} onChangeText={(text) => { setAdress(text) }} style={{ color: "#000", marginLeft: 15, fontWeight: '400', fontSize: 14, marginTop: 8 }} />
                 </View>
 
 
@@ -182,34 +248,23 @@ const Profile = ({ navigation }) => {
                     <TouchableOpacity style={{ height: responsiveHeight(4.8), justifyContent: 'center', borderRadius: 25, width: responsiveWidth(48), marginTop: 20, backgroundColor: '#EDEAFB' }}
                     >
                         {
-                            kycStatus == 1 ? <Text style={{ color: '#6A5AE0', fontWeight: '500', alignSelf: 'center', fontSize: 16 }}>Kyc Status : Pending </Text> :
-                                kycStatus == 2 ? <Text style={{ color: '#6A5AE0', fontWeight: '500', alignSelf: 'center', fontSize: 16 }}>Kyc Status : Rejected </Text> :
-                                    kycStatus == 3 ? <Text style={{ color: '#6A5AE0', fontWeight: '500', alignSelf: 'center', fontSize: 16 }}>Kyc Status : Completed </Text> :
-                                        <Text style={{ color: '#6A5AE0', fontWeight: '500', alignSelf: 'center', fontSize: 16 }}>Kyc Status : Not Submitted </Text>
-
+                            status == true ? <Text style={{ color: '#6A5AE0', fontWeight: '500', alignSelf: 'center', fontSize: 16 }}>Kyc Status : Pending </Text> :
+                                <Text style={{ color: '#6A5AE0', fontWeight: '500', alignSelf: 'center', fontSize: 16 }}>Kyc Status : incomplete</Text>
                         }
-
 
                     </TouchableOpacity>
 
                     <TouchableOpacity style={{ height: responsiveHeight(4.8), justifyContent: 'center', borderRadius: 5, width: responsiveWidth(38), marginTop: 20, backgroundColor: '#6A5AE0' }}
-                        onPress={() => {
-                            if (kycStatus === 0) {
-                                navigation.navigate('UploadKyc');
-                            } else {
-                                // Handle the case when kycStatus is not 0, such as showing an alert
-                                alert('Documents are already uploaded.');
-                            }
-                        }}
+                        onPress={() => navigation.navigate('UploadKyc')}
                     >
                         <Text style={{ color: '#fff', fontWeight: '500', alignSelf: 'center', fontSize: 16 }}>Update Kyc</Text>
                     </TouchableOpacity>
                 </View>
 
                 <TouchableOpacity style={{ height: responsiveHeight(6), justifyContent: 'center', alignSelf: 'center', borderRadius: 5, width: responsiveWidth(90), marginTop: 20, backgroundColor: '#6A5AE0' }}
-                    onPress={buttonLoading == true ? () => updateProfileFunc() : <>null</>}>
+                    onPress={indicator2 == true ? () => update() : <>null</>}>
                     {
-                        buttonLoading == true ? <Text style={{ color: '#fff', fontWeight: '500', alignSelf: 'center', fontSize: 16 }}>Update Proflie</Text> :
+                        indicator2 == true ? <Text style={{ color: '#fff', fontWeight: '500', alignSelf: 'center', fontSize: 16 }}>Update</Text> :
                             <ActivityIndicator size={30} color={'#fff'} style={{ justifyContent: 'center' }} />
 
                     }
@@ -222,4 +277,4 @@ const Profile = ({ navigation }) => {
     )
 }
 
-export default Profile
+export default Profile2
