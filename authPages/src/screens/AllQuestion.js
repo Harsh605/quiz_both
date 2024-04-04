@@ -9,6 +9,7 @@ import { useNavigation, useRoute } from '@react-navigation/native'
 import { RadioButton } from "react-native-paper";
 import { useDispatch, useSelector } from 'react-redux';
 import { winnersListPageAllDataOfAUserForParticularExam } from '../../slices/examSlice';
+import { modifyNumber } from '../utils/changeSignleDigit';
 
 
 const AllQuestion = (props) => {
@@ -20,6 +21,8 @@ const AllQuestion = (props) => {
     const gameId = route.params?.gameId || null;
     const noOfQue = route.params?.noOfQue || null;
     const userId = route.params?.id || null
+
+    console.log(userId, "userId........")
 
     const [selectedQueNo, setSelectedQueNo] = useState(1)
     const [select, setSelect] = useState('')
@@ -73,7 +76,7 @@ const AllQuestion = (props) => {
     const series2 = [`${winnersListPageAllDataOfAUserForParticularExamData?.correctPercentage}`, `${winnersListPageAllDataOfAUserForParticularExamData?.wrongPercentage}`];
     const sliceColor2 = ['#0085FF', '#A8A8A8'];
 
-    // console.log(winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion)
+    // console.log(winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion,"winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion")
 
     return (
         <SafeAreaView>
@@ -458,7 +461,7 @@ const AllQuestion = (props) => {
                                     fontSize: 15,
                                 }}
                             >
-                                {winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.t_m_Points}
+                                {modifyNumber(winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.timeTaken)}
                             </Text>
 
                         </TouchableOpacity>

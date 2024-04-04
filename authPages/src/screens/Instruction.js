@@ -185,9 +185,8 @@ const Instruction = ({ route, navigation }) => {
                         >
                             <Text style={{ marginRight: 5 }}>👉</Text>
                             <Text>
-                                प्रत्येक Question पर maximum 9.5 point बनाने हैं जो कि Answer के
-                                option A/B/C/D, सही/गलत, currect % और Time के point से मिलकर
-                                बनते हैं।
+                                प्रत्येक Question पर maximum 9.5 point बनाने हैं जो कि Answer के option A/B/C/D, सही/गलत, currect % और Time के point से मिलकर बनते हैं।
+
                             </Text>
                         </View>
 
@@ -201,8 +200,7 @@ const Instruction = ({ route, navigation }) => {
                         >
                             <Text style={{ marginRight: 5 }}>👉</Text>
                             <Text>
-                                सही option select करने पर 5.5 point और गलत option select करने पर
-                                3.5 point मिलते हैं।
+                                सही option select करने पर 5.5 point और गलत option select करने पर 3.5 point मिलते हैं।
                             </Text>
                         </View>
 
@@ -216,8 +214,8 @@ const Instruction = ({ route, navigation }) => {
                         >
                             <Text style={{ marginRight: 5 }}>👉</Text>
                             <Text>
-                                currect %, question level और concept modification को बताता है
-                                0,1,2,3,4,5,6,7,8,9 में से आप उचित अंक select करें।
+                                currect %, question level और concept modification को बताता है 0,1,2,3,4,5,6,7,8,9 में से आप उचित अंक select करें।
+
                             </Text>
                         </View>
 
@@ -230,7 +228,7 @@ const Instruction = ({ route, navigation }) => {
                             }}
                         >
                             <Text style={{ marginRight: 5 }}>👉</Text>
-                            <Text>प्रत्येक question के लिए 25 Second दिया गया है।</Text>
+                            <Text>प्रत्येक question के लिए निश्चित समय दिया गया है।</Text>
                         </View>
 
                         <View
@@ -243,24 +241,8 @@ const Instruction = ({ route, navigation }) => {
                         >
                             <Text style={{ marginRight: 5 }}>👉</Text>
                             <Text>
-                                सही / ग़लत के point और currect % के D.S point मे Time के point
-                                जोड़ने के लिए निश्चित second आने पर save बटन click करे ।
-                            </Text>
-                        </View>
+                                सही / ग़लत के point और currect % के D.S point मे Time के point जोड़ने के लिए निश्चित second आने पर save बटन click करे ।
 
-                        <View
-                            style={{
-                                marginHorizontal: 20,
-                                marginTop: 10,
-                                paddingHorizontal: 10,
-                                flexDirection: "row",
-                            }}
-                        >
-                            <Text style={{ marginRight: 5 }}>👉</Text>
-                            <Text>
-                                Question का निश्चित समय समाप्त होने पर आपको 5 second का समय
-                                leaderbord में rank, answer and other users की data देखने के लिए
-                                मिलेंगा उसके बाद Next question आयेगा।
                             </Text>
                         </View>
 
@@ -274,8 +256,23 @@ const Instruction = ({ route, navigation }) => {
                         >
                             <Text style={{ marginRight: 5 }}>👉</Text>
                             <Text>
-                                Test समाप्त होने पर रैंक के अनुसार scholarship आपके wallet में
-                                Transfer कर दी जायेगी।
+                                Question का निश्चित समय समाप्त होने पर आपको 5 second का समय leaderbord में rank, answer and other users की data देखने के लिए मिलेंगा उसके बाद Next question आयेगा।
+
+                            </Text>
+                        </View>
+
+                        <View
+                            style={{
+                                marginHorizontal: 20,
+                                marginTop: 10,
+                                paddingHorizontal: 10,
+                                flexDirection: "row",
+                            }}
+                        >
+                            <Text style={{ marginRight: 5 }}>👉</Text>
+                            <Text>
+                                Test समाप्त होने पर रैंक के अनुसार scholarship आपके wallet में Transfer कर दी जायेगी।
+
                             </Text>
                         </View>
 
@@ -290,8 +287,55 @@ const Instruction = ({ route, navigation }) => {
                             <Text style={{ marginRight: 5 }}>👉</Text>
                             <Text>
                                 Screen पर आपको Timer में Time second में चलता हुआ Show होगा।
+
                             </Text>
                         </View>
+                        <View
+                            style={{
+                                marginHorizontal: 20,
+                                marginTop: 10,
+                                paddingHorizontal: 10,
+                                flexDirection: "row",
+                            }}
+                        >
+                            <Text style={{ marginRight: 5 }}>👉</Text>
+                            <Text>
+                                प्रत्येक Question दिए गए निश्चित समय में save करना होगा अन्यथा उस question के point नहीं जुड़ेंगे।
+
+
+                            </Text>
+                        </View>
+                        <View
+                            style={{
+                                marginHorizontal: 20,
+                                marginTop: 10,
+                                paddingHorizontal: 10,
+                                flexDirection: "row",
+                            }}
+                        >
+                            <Text style={{ marginRight: 5 }}>👉</Text>
+                            <Text>
+                                यह Test, Hindi और English दोनों language में से एक select करके दे सकते हैं।
+
+
+
+                            </Text>
+                        </View>
+                        <View
+                            style={{
+                                marginHorizontal: 20,
+                                marginTop: 10,
+                                paddingHorizontal: 10,
+                                flexDirection: "row",
+                            }}
+                        >
+                            <Text style={{ marginRight: 5 }}>👉</Text>
+                            <Text>
+                                Extra जानकारी point system और How to take test पर click करके ले सकते हैं।
+
+                            </Text>
+                        </View>
+
                     </View>
                 ) : null}
 

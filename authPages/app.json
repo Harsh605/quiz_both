@@ -1,14 +1,18 @@
 {
   "expo": {
-    "name": "authPages",
-    "slug": "authPages",
+    "name": "Pdowin",
+    "slug": "Pdowin",
     "android": {
-      "package": "com.harsh1600.authPages"
+      "package": "com.harsh1600.pdowin"
     },
     "extra": {
       "eas": {
         "projectId": "9a7c417f-872b-477a-9422-dae474aaf143"
       }
-    }
+    },
+    "ios": {
+      "bundleIdentifier": "n"
+    }, 
+    "icon": "./assets/logo.png" 
   }
 }

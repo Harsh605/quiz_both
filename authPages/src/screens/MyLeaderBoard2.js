@@ -20,6 +20,7 @@ import PieChart from 'react-native-pie-chart';
 import { useDispatch, useSelector } from "react-redux";
 import { quizPageEachQuestionLeaderBoard } from "../../slices/quizSlice";
 import { winnersListPageAllDataOfAUserForParticularExam } from "../../slices/examSlice";
+import { modifyNumber } from "../utils/changeSignleDigit";
 
 const MyLeaderBoard2 = ({ navigation, route }) => {
     const dispatch = useDispatch()
@@ -37,6 +38,7 @@ const MyLeaderBoard2 = ({ navigation, route }) => {
     const [nextQuestionTimer, setNextQuestionTimer] = useState(questionData?.t)
     const [rowPointsValue, setRowPointsValue] = useState(0);
     const [remainingTimeAfterSave, setRemainingTimeAfterSave] = useState(0)
+    const [questionSubmitExactTiming, setQuestionSubmitExactTiming] = useState(0)
     const [questionIntervalCounter, setQuestionIntervalCounter] = useState(questionData?.interval);
 
     const [modalForLeaderBoard, setModalForLeaderBoard] = useState(false);
@@ -110,7 +112,7 @@ const MyLeaderBoard2 = ({ navigation, route }) => {
         const calculateAndSet = () => {
             const newValue = selectedRightOrWrong === "first" ? (
                 (() => {
-                    const sum = 5.5 + selectedCorrectPercent + rowPointsValue;
+                    const sum = 5.5 + selectedCorrectPercent + questionSubmitExactTiming;
                     const integerPart = Math.floor(sum);
                     const fractionalPart = sum - integerPart;
                     const integerDigits = integerPart.toString().split('').map(Number);
@@ -121,7 +123,7 @@ const MyLeaderBoard2 = ({ navigation, route }) => {
             ) :
                 selectedRightOrWrong === "second" ? (
                     (() => {
-                        const sum = 3.5 + selectedCorrectPercent + rowPointsValue;
+                        const sum = 3.5 + selectedCorrectPercent + questionSubmitExactTiming;
                         const integerPart = Math.floor(sum);
                         const fractionalPart = sum - integerPart;
                         const integerDigits = integerPart.toString().split('').map(Number);
@@ -144,6 +146,7 @@ const MyLeaderBoard2 = ({ navigation, route }) => {
 
     const submitQuestionAnswer = ({ answerSubmitTimeSend }) => {
         const socket = io('https://quiz.metablocktechnologies.org');
+        setQuestionSubmitExactTiming(answerSubmitTimeSend)
         setRemainingTimeAfterSave((questionData.t) - answerSubmitTimeSend)
         if (!selectedRightOrWrong || !selectedOption || !selectedCorrectPercent) {
             alert("Please Fill All Options");
@@ -195,7 +198,7 @@ const MyLeaderBoard2 = ({ navigation, route }) => {
         // console.log("questionData.t", questionData.t)
         // console.log("answerSubmitTime", answerSubmitTimeSend)
         // console.log(questionData.interval)
-        console.log(selectedQuestionLanguage,"selectedQuestionLanguage.............................................")
+        console.log(selectedQuestionLanguage, "selectedQuestionLanguage.............................................")
 
     };
 
@@ -602,7 +605,8 @@ const MyLeaderBoard2 = ({ navigation, route }) => {
                                         marginTop: 5,
                                     }}
                                 >
-                                    {nextQuestionTimer}
+                                    {isQuestionSave ? questionSubmitExactTiming : 0}
+                                    {/* {nextQuestionTimer} */}
                                 </Text>
                             </View>
                         </View>
@@ -689,7 +693,8 @@ const MyLeaderBoard2 = ({ navigation, route }) => {
                                     }}
                                 >
                                     {/* {formatTime(nextQuestionTimer)} */}
-                                    {nextQuestionTimer}
+                                    {isQuestionSave ? modifyNumber(questionSubmitExactTiming) : 0}
+                                    {/* {nextQuestionTimer} */}
                                 </Text>
                             </TouchableOpacity>
                         </View>
@@ -1490,7 +1495,7 @@ const MyLeaderBoard2 = ({ navigation, route }) => {
                                             fontSize: 15,
                                         }}
                                     >
-                                        {winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.t_m_Points}
+                                        {modifyNumber(winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.timeTaken)}
                                     </Text>
 
                                 </TouchableOpacity>

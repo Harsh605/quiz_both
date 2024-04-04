@@ -15,6 +15,7 @@ const MyQuesInPercentage = ({ navigation, route }) => {
     const dispatch = useDispatch()
 
     const [selectedQueNo, setSelectedQueNo] = useState(1)
+    const [questionClicked, setQuestionClicked] = useState(0)
     const [select, setSelect] = useState('')
     const [chartData, setChartData] = useState('')
 
@@ -24,19 +25,7 @@ const MyQuesInPercentage = ({ navigation, route }) => {
 
     const { winnersListPageAllDataOfAUserForParticularExamData } = useSelector((state) => state.examCustom)
 
-
-    const [searchQuery, setSearchQuery] = useState('');
-    const [searchFilteredData, setSearchFilteredData] = useState(winnersListPageAllDataOfAUserForParticularExamData?.questionleaderShip);
-    const handleSearch = () => {
-        const filtered = winnersListPageAllDataOfAUserForParticularExamData?.questionleaderShip?.filter(item => {
-            const nameMatches = item?.User?.name?.toLowerCase().includes(searchQuery.toLowerCase());
-            const regIdMatches = item?.User?.id?.toLowerCase().includes(searchQuery.toLowerCase());
-            return nameMatches || regIdMatches;
-        });
-        setSearchFilteredData(filtered);
-    };
-
-
+    const [searchName, setSearchName] = useState("");
 
     const renderButtons = () => {
         const buttons = [];
@@ -57,7 +46,7 @@ const MyQuesInPercentage = ({ navigation, route }) => {
                     onPress={() => {
                         setSelectedQueNo(i);
                         dispatch(winnersListPageAllDataOfAUserForParticularExam({ gameId, que_no: i }))
-                        handleSearch()
+
                     }}
                 >
                     <Text
@@ -102,10 +91,7 @@ const MyQuesInPercentage = ({ navigation, route }) => {
         }]
     };
 
-    useEffect(() => {
-        dispatch(winnersListPageAllDataOfAUserForParticularExam({ gameId, que_no: selectedQueNo }))
-        handleSearch()
-    }, [dispatch, selectedQueNo])
+
 
     useEffect(() => {
         // Ensure winnersListPageAllDataOfAUserForParticularExamData is not null before accessing its properties
@@ -130,9 +116,12 @@ const MyQuesInPercentage = ({ navigation, route }) => {
         }
     }, [winnersListPageAllDataOfAUserForParticularExamData]);
 
-    console.log("rank", winnersListPageAllDataOfAUserForParticularExamData?.questionleaderShip[0]?.rank)
-    console.log("name", winnersListPageAllDataOfAUserForParticularExamData?.questionleaderShip[0]?.name)
-    console.log("regId", winnersListPageAllDataOfAUserForParticularExamData?.wrongPercentage)
+    useEffect(() => {
+        dispatch(winnersListPageAllDataOfAUserForParticularExam({ gameId, que_no: selectedQueNo }))
+    }, [dispatch, selectedQueNo, searchName])
+    // console.log(winnersListPageAllDataOfAUserForParticularExamData?.questionleaderShip[1], "rank")
+    // console.log("name", winnersListPageAllDataOfAUserForParticularExamData?.questionleaderShip[0]?.name)
+    // console.log("regId", winnersListPageAllDataOfAUserForParticularExamData?.wrongPercentage)
     return (
         <SafeAreaView  >
             <StatusBar translucent={true} barStyle={'light-content'} backgroundColor={'#6A5AE0'} />
@@ -411,9 +400,9 @@ const MyQuesInPercentage = ({ navigation, route }) => {
                         <View style={{ flex: 0.80, justifyContent: 'center', alignSelf: 'center' }}>
                             <TextInput
                                 require placeholder='Search here..' placeholderTextColor={'#000'} style={{ color: '#000', marginLeft: 15, fontWeight: '400', fontSize: 17, fontFamily: 'Jaldi-Regular' }}
-                                value={searchQuery}
-                                onChangeText={text => setSearchQuery(text)}
-                                onSubmitEditing={handleSearch}
+                                value={searchName}
+                                onChangeText={(value) => setSearchName(value)}
+                            // onSubmitEditing={handleSearch}
                             />
                         </View>
 
@@ -437,22 +426,31 @@ const MyQuesInPercentage = ({ navigation, route }) => {
 
                         </View>
 
-                        {
+                        {winnersListPageAllDataOfAUserForParticularExamData?.questionleaderShip?.length > 0 &&
+                            [...winnersListPageAllDataOfAUserForParticularExamData?.questionleaderShip]?.filter(item => {
+                                if (!searchName) {
+                                    return item?.answer === winnersListPageAllDataOfAUserForParticularExamData?.answer;
+                                } else {
+                                    return (
 
-                            //  // Sort by rank
-                            searchFilteredData?.filter(item => item.isCorrect === true).sort((a, b) => a?.rank - b?.rank).map((item, index) => {
-                                console.log(item, "myitem");
-                                return (
-                                    <>
-                                        <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 10, height: responsiveHeight(6), width: responsiveWidth(86), borderRadius: 2, marginTop: 5, backgroundColor: '#EDEAFB', alignSelf: 'center' }}>
-                                            <Text style={{ alignSelf: 'center', color: '#6A5AE0' }}>#{item?.rank}</Text>
-                                            <Text style={{ alignSelf: 'center', color: '#000' }}>{item?.User?.name}</Text>
-                                            <Text style={{ alignSelf: 'center', color: 'green' }}>{item?.User?.id}</Text>
-                                            <Text style={{ alignSelf: 'center', color: '#000', fontWeight: '500' }}>{item?.mainPoints}</Text>
-                                        </View>
-                                    </>
-                                );
+                                        (item?.User?.name?.toLowerCase().includes(searchName.toLowerCase()) || item?.User?.id?.toLowerCase().includes(searchName.toLowerCase())) && // Filter based on searchName
+                                        item?.answer === winnersListPageAllDataOfAUserForParticularExamData?.answer  // Ensure answer matching
+                                    );
+                                }
                             })
+                                .sort((a, b) => a?.rank - b?.rank).map((item, index) => {
+                                    console.log(item.answer, winnersListPageAllDataOfAUserForParticularExamData?.answer, "asdddddd..........");
+                                    return (
+                                        <>
+                                            <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 10, height: responsiveHeight(6), width: responsiveWidth(86), borderRadius: 2, marginTop: 5, backgroundColor: '#EDEAFB', alignSelf: 'center' }}>
+                                                <Text style={{ alignSelf: 'center', color: '#6A5AE0' }}>#{item?.rank}</Text>
+                                                <Text style={{ alignSelf: 'center', color: '#000' }}>{item?.User?.name}</Text>
+                                                <Text style={{ alignSelf: 'center', color: 'green' }}>{item?.User?.id}</Text>
+                                                <Text style={{ alignSelf: 'center', color: '#000', fontWeight: '500' }}>{item?.mainPoints}</Text>
+                                            </View>
+                                        </>
+                                    );
+                                })
 
 
 

@@ -21,7 +21,6 @@ const WinnerDetail = ({ navigation, route }) => {
     const { winnerPageLeadersboardData } = useSelector((state) => state.examCustom)
 
     useEffect(() => {
-        console.log("asdasd")
         dispatch(winnerPageLeadersboard({ name: "", gameId }))
     }, [dispatch]);
 

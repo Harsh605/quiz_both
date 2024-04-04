@@ -13,6 +13,7 @@ const Winner = ({ navigation }) => {
   const dispatch = useDispatch()
 
   const [refreshing, setRefreshing] = useState(false);
+  
   const [searchName, setSearchName] = useState("");
 
 
@@ -47,7 +48,7 @@ const Winner = ({ navigation }) => {
     return () => clearInterval(intervalId);
   }, [dispatch, searchName])
 
-  console.log("winnerPageAllExamsData",winnerPageAllExamsData)
+  // console.log("winnerPageAllExamsData",winnerPageAllExamsData)
   return (
     <>
       <View>
