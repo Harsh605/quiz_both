@@ -164,10 +164,11 @@ const Percentage = ({ navigation }) => {
                   <View
                     key={index}
                     style={{
-                      height: responsiveHeight(45),
+                      // height: responsiveHeight(45),
                       width: responsiveWidth(90),
                       marginBottom: 10,
                       paddingHorizontal: 20,
+                      paddingVertical: 20,
                       backgroundColor: "#fff",
                       alignSelf: "center",
                       marginTop: 20,

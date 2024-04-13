@@ -158,7 +158,7 @@ const Winner = ({ navigation }) => {
         </View>
 
 
-        <View style={{ height: responsiveHeight(66) }}>
+        <View style={{ height: responsiveHeight(67) }}>
           <ScrollView refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }>
@@ -171,10 +171,11 @@ const Winner = ({ navigation }) => {
                     <View
                       key={index}
                       style={{
-                        height: responsiveHeight(42),
+                        // height: responsiveHeight(42),
                         width: responsiveWidth(90),
                         marginBottom: 10,
                         paddingHorizontal: 20,
+                        paddingVertical: 20,
                         backgroundColor: "#fff",
                         alignSelf: "center",
                         marginTop: 20,

@@ -14,7 +14,7 @@ const HowtoPlay = ({ navigation }) => {
                         <AntDesign name="arrowleft" size={24} color="white" />
                     </TouchableOpacity>
 
-                    <Text style={{ color: '#fff', fontSize: 18, fontWeight: '500', alignSelf: 'center', marginTop: 30, marginLeft: '5%' }}>How to Play</Text>
+                    <Text style={{ color: '#fff', fontSize: 18, fontWeight: '500', alignSelf: 'center', marginTop: 30, marginLeft: '5%' }}>How to Take Quiz</Text>
                 </View>
             </View>
 
@@ -31,7 +31,7 @@ const HowtoPlay = ({ navigation }) => {
 
                 <View style={{ marginHorizontal: 20, marginTop: 10, flexDirection: 'row' }}>
                     <Text style={{ marginRight: 5 }}>👉</Text>
-                    <Text>सही option select करने पर 5.5 point और गलत option select करने पर 3.3 point मिलते हैं।</Text>
+                    <Text>सही option select करने पर 5.5 point और गलत option select करने पर 3.5 point मिलते हैं।</Text>
                 </View>
 
                 <View style={{ marginHorizontal: 20, marginTop: 10, flexDirection: 'row' }}>

@@ -141,6 +141,8 @@ const WinnerDetail = ({ navigation, route }) => {
                             marginTop: 10,
                             backgroundColor: "#fff",
                             alignSelf: "center",
+                            // marginLeft: 10,
+                            // marginRight: 20
                         }}
                     >
                         <Text
@@ -154,8 +156,8 @@ const WinnerDetail = ({ navigation, route }) => {
                                 alignSelf: "center",
                                 color: "#000",
                                 fontWeight: "500",
-                                marginLeft: 10,
-                                marginRight: 30
+                                marginLeft: -5,
+                                marginRight: 10
                             }}
                         >
                             Name
@@ -179,14 +181,15 @@ const WinnerDetail = ({ navigation, route }) => {
                                 alignSelf: "center",
                                 color: "#000",
                                 fontWeight: "500",
-                                marginRight: 10,
+                                // marginRight: 10,
+                                flex: 0.15
                             }}
                         >
                             Price
                         </Text>
 
                         <Text
-                            style={{ alignSelf: "center", color: "#000", fontWeight: "500" }}
+                            style={{ alignSelf: "center", color: "#000", fontWeight: "500",flex: 0.15 }}
                         >
                             Point
                         </Text>
@@ -213,15 +216,15 @@ const WinnerDetail = ({ navigation, route }) => {
                                         }}
                                         onPress={() => navigation.navigate("AllQuestion", { gameId: gameId, id: (res.User[0]._id), noOfQue })}
                                     >
-                                        <Text style={{ alignSelf: "center", color: "#6A5AE0", flex: 0.25 }}>{res?.rank}</Text>
-                                        <Text style={{ alignSelf: "center", color: "#000", flex: 0.25 }}>{res.User[0].name}</Text>
-                                        <Text style={{ alignSelf: "center", color: "#000", flex: 0.25, marginRight: 10 }}>{res.User[0].id}</Text>
+                                        <Text style={{ alignSelf: "center", color: "#6A5AE0", flex: 0.10, }}>{res?.rank}</Text>
+                                        <Text style={{ alignSelf: "center", color: "#000",  flex: 0.20,}}>{res.User[0].name}</Text>
+                                        <Text style={{ alignSelf: "center", color: "#000", flex: 0.30 }}>{res.User[0].id}</Text>
 
                                         <Text style={{ alignSelf: "center", color: "green", flex: 0.20 }}>{res?.wonAmount > 0 ? res?.wonAmount+"₹" :res?.wonAmount  }</Text>
 
 
                                         <Text
-                                            style={{ alignSelf: "center", color: "#000", fontWeight: "500", flex: 0.10 }}
+                                            style={{ alignSelf: "center", color: "#000", fontWeight: "500", flex: 0.05 }}
                                         >
                                             {res?.mainPoints}
                                         </Text>

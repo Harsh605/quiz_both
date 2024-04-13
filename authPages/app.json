@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Pdowin",
-    "slug": "Pdowin",
+    "slug": "authPages",
     "android": {
       "package": "com.harsh1600.pdowin"
     },
@@ -13,6 +13,6 @@
     "ios": {
       "bundleIdentifier": "n"
     }, 
-    "icon": "./assets/logo.png" 
+    "icon": "./assets/images/logo.png" 
   }
 }

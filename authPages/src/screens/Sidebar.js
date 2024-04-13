@@ -105,7 +105,7 @@ const Sidebar = ({ navigation }) => {
                 >
                     <Image source={require('../images/play.png')} style={{ height: responsiveHeight(2.5), tintColor: '#fff', width: responsiveWidth(4.8), alignSelf: 'center', borderRadius: 100 }} />
 
-                    <Text style={{ color: '#fff', fontWeight: '500', fontSize: 16, alignSelf: 'flex-start', marginLeft: 10 }}>How to Play</Text>
+                    <Text style={{ color: '#fff', fontWeight: '500', fontSize: 16, alignSelf: 'flex-start', marginLeft: 10 }}>How to Take Quiz</Text>
                 </TouchableOpacity>
 
 

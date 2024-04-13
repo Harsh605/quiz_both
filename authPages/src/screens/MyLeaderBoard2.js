@@ -148,7 +148,7 @@ const MyLeaderBoard2 = ({ navigation, route }) => {
         const socket = io('https://quiz.metablocktechnologies.org');
         setQuestionSubmitExactTiming(answerSubmitTimeSend)
         setRemainingTimeAfterSave((questionData.t) - answerSubmitTimeSend)
-        if (!selectedRightOrWrong || !selectedOption || !selectedCorrectPercent) {
+        if (!selectedRightOrWrong || !selectedOption || selectedCorrectPercent === null) {
             alert("Please Fill All Options");
             return;
         }
@@ -694,6 +694,7 @@ const MyLeaderBoard2 = ({ navigation, route }) => {
                                 >
                                     {/* {formatTime(nextQuestionTimer)} */}
                                     {isQuestionSave ? modifyNumber(questionSubmitExactTiming) : 0}
+
                                     {/* {nextQuestionTimer} */}
                                 </Text>
                             </TouchableOpacity>
@@ -715,7 +716,21 @@ const MyLeaderBoard2 = ({ navigation, route }) => {
                             <Text
                                 style={{ alignSelf: "center", fontWeight: "600", fontSize: 15 }}
                             >
-                                {rowPointsValue}
+                                {
+                                    isQuestionSave ?
+                                        rowPointsValue :
+                                        selectedRightOrWrong === "first" ? (
+                                            (5.5 + selectedCorrectPercent) > 9 ?
+                                                ((5.5 + selectedCorrectPercent) % 10) + Math.floor((5.5 + selectedCorrectPercent) / 10) :
+                                                (5.5 + selectedCorrectPercent)
+                                        ) :
+                                            selectedRightOrWrong === "second" ? (
+                                                (3.5 + selectedCorrectPercent) > 9 ?
+                                                    ((3.5 + selectedCorrectPercent) % 10) + Math.floor((3.5 + selectedCorrectPercent) / 10) :
+                                                    (3.5 + selectedCorrectPercent)
+                                            ) :
+                                                0
+                                }
 
 
                             </Text>

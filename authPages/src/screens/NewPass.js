@@ -13,13 +13,15 @@ import Toast from 'react-native-toast-message';
 
 
 
-const NewPass = ({ navigation }) => {
+const NewPass = ({ navigation,route }) => {
     const [hidepass, sethidepass] = useState(true);
     const [hidepass2, sethidepass2] = useState(true);
 
     const [password, setPassword] = useState('');
     const [confirmPass, setConfirmPass] = useState('');
     const [indicator2, setIndicator2] = useState(true)
+
+    const jwtToken = route.params?.jwtToken || null;
 
 
 
@@ -29,7 +31,7 @@ const NewPass = ({ navigation }) => {
             setIndicator2(false)
 
             var myHeaders = new Headers();
-            myHeaders.append("Authorization", `${await AsyncStorage.getItem('token')}`);
+            myHeaders.append("Authorization", `${jwtToken}`);
             // alert(`${await AsyncStorage.getItem("token")}`)
 
             myHeaders.append("Content-Type", "application/json");

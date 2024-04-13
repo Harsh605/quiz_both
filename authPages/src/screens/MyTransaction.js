@@ -103,7 +103,7 @@ const MyTransaction = ({ navigation }) => {
                 .then(response => response.json())
                 .then(
                     result => {
-                        console.log(result.data.quizs)
+                        console.log(result.data.quizs,"asdasdasd.....................")
 
                         setquiseRewarddata(result.data.quizs)
                     })
@@ -411,8 +411,8 @@ const MyTransaction = ({ navigation }) => {
                                                         <Text style={{ alignSelf: 'center', color: '#000', flex: 0.2 }}>{res?.wonAmount}</Text>
 
                                                         <View style={{ alignSelf: 'center' }}>
-                                                            <Text style={{ alignSelf: 'center', color: '#000', fontWeight: '400', fontSize: 13 }}>{new Date(res?.businessDate).toLocaleDateString()}</Text>
-                                                            <Text style={{ alignSelf: 'center', color: '#000', fontWeight: '400', fontSize: 13 }}>{new Date(res?.businessDate).toLocaleTimeString()}</Text>
+                                                            <Text style={{ alignSelf: 'center', color: '#000', fontWeight: '400', fontSize: 13 }}>{(res?.gameId?.updatedAt).slice(0,10)}</Text>
+                                                            <Text style={{ alignSelf: 'center', color: '#000', fontWeight: '400', fontSize: 13 }}>{(res?.gameId?.updatedAt).slice(11,19)}</Text>
                                                         </View>
 
 

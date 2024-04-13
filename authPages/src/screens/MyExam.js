@@ -254,10 +254,11 @@ const MyExam = ({ navigation }) => {
                       <View
                         key={index}
                         style={{
-                          height: responsiveHeight(45),
+                          // height: responsiveHeight(45),
                           width: responsiveWidth(90),
                           marginBottom: 10,
                           paddingHorizontal: 20,
+                          paddingVertical: 20,
                           backgroundColor: "#fff",
                           alignSelf: "center",
                           marginTop: 20,
@@ -341,7 +342,7 @@ const MyExam = ({ navigation }) => {
                               fontSize: 13,
                             }}
                           >
-                            {data?.Game[0]?.noOfQuestion} Questions | Time {millisToMinutesAndSeconds(data?.Game[0]?.duration)} minss
+                            {data?.Game[0]?.noOfQuestion} Questions | Time {millisToMinutesAndSeconds(data?.Game[0]?.duration)} mins
                           </Text>
                         </View>
 
@@ -471,8 +472,9 @@ const MyExam = ({ navigation }) => {
                     <View
                       key={index}
                       style={{
-                        height: responsiveHeight(45),
+                        // height: responsiveHeight(45),
                         width: responsiveWidth(90),
+                        paddingVertical: 20,
                         marginBottom: 10,
                         paddingHorizontal: 20,
                         backgroundColor: "#fff",
@@ -557,7 +559,7 @@ const MyExam = ({ navigation }) => {
                             fontSize: 13,
                           }}
                         >
-                          {item?.Game[0].noOfQuestion} Questions | Time 18 mins
+                          {item?.Game[0].noOfQuestion} Questions 
                         </Text>
                       </View>
 
@@ -580,7 +582,7 @@ const MyExam = ({ navigation }) => {
                             fontSize: 14,
                           }}
                         >
-                          Joined : {item?.Game[0].noOfParticipation}
+                          Joined : {item?.Game[0]?.UserGame.length}
                         </Text>
                       </View>
 
@@ -603,7 +605,7 @@ const MyExam = ({ navigation }) => {
                             fontSize: 14,
                           }}
                         >
-                          Joined Fees: {item?.amount}
+                          Joined Fees: ₹{item?.Game[0]?.entranceAmount}
                         </Text>
                       </View>
 

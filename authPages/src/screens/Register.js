@@ -135,7 +135,9 @@ const Register = ({ navigation }) => {
             var raw = JSON.stringify({
                 "resetToken": tkn,
                 "otp": `${f1}${f2}${f3}${f4}`,
-                "email": email
+                "email": email,
+                "TYPE":"registerType"
+               
             });
 
             // DVKHOLKTKAVC

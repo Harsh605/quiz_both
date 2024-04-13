@@ -99,7 +99,7 @@ const Footer = ({ navigation }) => {
                 />
 
                 <Text style={{ color: "#A9A9A9", fontWeight: "400", fontSize: 12 }}>
-                    Introduction
+                    Point System
                 </Text>
             </TouchableOpacity>
 
