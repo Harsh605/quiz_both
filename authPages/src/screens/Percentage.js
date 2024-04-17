@@ -260,7 +260,7 @@ const Percentage = ({ navigation }) => {
                           fontSize: 14,
                         }}
                       >
-                        Joined : {res?.noOfParticipation}
+                        Joined : {res?.joinedMember}
                       </Text>
                     </View>
 

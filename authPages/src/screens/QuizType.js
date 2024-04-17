@@ -104,17 +104,17 @@ const QuizType = ({ navigation, route }) => {
                         navigation.navigate('MyExam')
                     }
                     else {
-                        console.log(result.message);
+                        console.log("Sdasdasd", result.message);
                     }
                 })
-                .catch(error => console.log('error', error));
+                .catch(error => console.log('error........................', error));
 
         } catch (error) {
 
         }
     }
 
-    // console.log(mydata, 'mydata');
+    console.log(mydata, 'mydata');
 
     return (
         <>
@@ -270,6 +270,7 @@ const QuizType = ({ navigation, route }) => {
                                                         <View>
                                                             <Text style={{ marginHorizontal: 20, marginTop: 5, borderBottomWidth: 0.5, borderColor: '#8A8A8A' }}>Be the first in your network to join this content</Text>
                                                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 20 }}>
+                                                                <Text style={{ marginTop: 10 }}>No</Text>
                                                                 <Text style={{ marginTop: 10 }}>All Team</Text>
                                                                 <Text style={{ marginTop: 10 }}>Name</Text>
                                                                 <Text style={{ marginTop: 10 }}>Reg.ID</Text>
@@ -278,18 +279,29 @@ const QuizType = ({ navigation, route }) => {
                                                             <View style={{ borderBottomWidth: 0.6, marginHorizontal: 10, marginTop: 7, marginBottom: 1, borderColor: '#8A8A8A' }}></View>
 
                                                             {
-                                                                item?.UserGame[0]?.User?.map((res, index) => {
-                                                                    return (
-                                                                        <>
-                                                                            <View key={index} style={{ flexDirection: 'row', justifyContent: 'flex-start', marginHorizontal: 20 }}>
-                                                                                <Image source={require('../images/quiz_banner.jpeg')} style={{ height: responsiveHeight(6), marginRight: '17%', width: responsiveWidth(12), borderRadius: 100, alignSelf: 'flex-start', marginHorizontal: 20, marginTop: 3 }} />
-                                                                                <Text style={{ alignSelf: 'center', marginLeft: 20, flex: 0.8 }}>{res?.name}</Text>
-                                                                                <Text style={{ alignSelf: 'center', marginLeft: 20 }}>{res?.id}</Text>
+                                                            <View style={{}}>
 
+                                                                <ScrollView>
+                                                                    {mydata[0]?.UserGame.map((res, index) => (
+                                                                        <>
+                                                                        <View key={index}>
+                                                                            <View style={{ flexDirection: 'row', justifyContent: 'flex-start', marginHorizontal: 10 }}>
+                                                                                <Text style={{ alignSelf: 'center', marginLeft: 10, flex: 0.4 }}>{index + 1}</Text>
+                                                                                <Image
+                                                                                    source={{ uri: `https://quiz.metablocktechnologies.org/uploads/${res?.User[0]?.avatar}` }}
+                                                                                    style={{ height: responsiveHeight(6), marginRight: '17%', width: responsiveWidth(12), borderRadius: 100, alignSelf: 'flex-start', marginHorizontal: 20, marginTop: 3 }} />
+                                                                                <Text style={{ alignSelf: 'center', marginLeft: 10, flex: 0.8 }}>{res?.User[0]?.name}</Text>
+                                                                                <Text style={{ alignSelf: 'center', marginLeft: 10 }}>{res?.User[0].id}</Text>
                                                                             </View>
+                                                                            {/* You can add more views or components here if needed */}
+                                                                        </View>
+                                                                        
+                                                                        
+                                                                        
                                                                         </>
-                                                                    )
-                                                                })
+                                                                    ))}
+                                                                </ScrollView>
+                                                                    </View>
                                                             }
                                                             <View style={{ borderBottomWidth: 0.6, marginHorizontal: 10, marginTop: 7, marginBottom: 1, borderColor: '#8A8A8A' }}></View>
 

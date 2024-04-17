@@ -13,6 +13,7 @@ const WinnerDetail = ({ navigation, route }) => {
     const gameId = route.params?.gameid || null;
     const noOfQue = route.params?.noOfQue || null;
 
+
     console.log("gameId..............",gameId)
 
 
@@ -196,7 +197,7 @@ const WinnerDetail = ({ navigation, route }) => {
                     </View>
 
                     {
-                        filteredData?.map((res, index) => {
+                        filteredData?.sort((a, b) => a.rank - b.rank)?.map((res, index) => {
                             console.log(res, "rom");
                             // console.log(res.User[0].id,"resId");
                             return (

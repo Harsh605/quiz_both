@@ -114,7 +114,7 @@ export const updateKyc = createAsyncThunk(
                 redirect: 'follow',
             };
 
-            const url = `http://192.168.175.239/api/upload-kyc`;
+            const url = `https://quiz.metablocktechnologies.org/api/upload-kyc`;
             const response = await fetch(url, requestOptions);
             const data = await response.json();
             console.log("data.....................................................", data)

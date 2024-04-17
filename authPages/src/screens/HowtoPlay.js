@@ -26,12 +26,12 @@ const HowtoPlay = ({ navigation }) => {
 
                 <View style={{ marginHorizontal: 20, marginTop: 10, flexDirection: 'row' }}>
                     <Text style={{ marginRight: 5 }}>👉</Text>
-                    <Text>प्रत्येक Question पर maximum 9.5 point बनाने हैं जो कि Answer के option A/B/C/D, सही/गलत, currect % और Time के point से मिलकर बनते हैं।</Text>
+                    <Text>प्रत्येक Question पर maximum 9 point बनाने हैं जो कि Answer के option A/B/C/D, सही/गलत, currect % और Time के point से मिलकर बनते हैं।</Text>
                 </View>
 
                 <View style={{ marginHorizontal: 20, marginTop: 10, flexDirection: 'row' }}>
                     <Text style={{ marginRight: 5 }}>👉</Text>
-                    <Text>सही option select करने पर 5.5 point और गलत option select करने पर 3.5 point मिलते हैं।</Text>
+                    <Text>सही option select करने पर 5 point और गलत option select करने पर 3 point मिलते हैं।</Text>
                 </View>
 
                 <View style={{ marginHorizontal: 20, marginTop: 10, flexDirection: 'row' }}>

@@ -16,6 +16,7 @@ const Welcome = () => {
       const value = await AsyncStorage.getItem('token');
       if (value !== null) {
         settkn(value)
+        
         navigation.navigate("Home")
       }
       else {

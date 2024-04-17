@@ -22,7 +22,7 @@ const AllQuestion = (props) => {
     const noOfQue = route.params?.noOfQue || null;
     const userId = route.params?.id || null
 
-    console.log(userId, "userId........")
+    console.log(userId, "userId........,,,,..............................")
 
     const [selectedQueNo, setSelectedQueNo] = useState(1)
     const [select, setSelect] = useState('')
@@ -175,7 +175,7 @@ const AllQuestion = (props) => {
                                 color="#0085FF"
                                 uncheckedColor="#B9C3CC"
                                 value="5"
-                                status={winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.rM == 5.5 ? "checked" : "unchecked"}
+                                status={winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.rM == 5 ? "checked" : "unchecked"}
                             />
                         </View>
 
@@ -209,7 +209,7 @@ const AllQuestion = (props) => {
                                 color="#0085FF"
                                 uncheckedColor="#B9C3CC"
                                 value="second"
-                                status={winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.rM === 3.5 ? "checked" : "unchecked"}
+                                status={winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.rM === 3 ? "checked" : "unchecked"}
                             />
                         </View>
 

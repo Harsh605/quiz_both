@@ -112,7 +112,7 @@ const MyLeaderBoard2 = ({ navigation, route }) => {
         const calculateAndSet = () => {
             const newValue = selectedRightOrWrong === "first" ? (
                 (() => {
-                    const sum = 5.5 + selectedCorrectPercent + questionSubmitExactTiming;
+                    const sum = 5 + selectedCorrectPercent + questionSubmitExactTiming;
                     const integerPart = Math.floor(sum);
                     const fractionalPart = sum - integerPart;
                     const integerDigits = integerPart.toString().split('').map(Number);
@@ -123,7 +123,7 @@ const MyLeaderBoard2 = ({ navigation, route }) => {
             ) :
                 selectedRightOrWrong === "second" ? (
                     (() => {
-                        const sum = 3.5 + selectedCorrectPercent + questionSubmitExactTiming;
+                        const sum = 3 + selectedCorrectPercent + questionSubmitExactTiming;
                         const integerPart = Math.floor(sum);
                         const fractionalPart = sum - integerPart;
                         const integerDigits = integerPart.toString().split('').map(Number);
@@ -171,7 +171,7 @@ const MyLeaderBoard2 = ({ navigation, route }) => {
             q_time: questionData?.t,
             schedule: questionData?.schedule, // Changed the key to avoid duplication
             rawPoints: rowPointsValue,
-            rM: selectedRightOrWrong === "first" ? 5.5 : selectedRightOrWrong === "second" ? 3.5 : null,
+            rM: selectedRightOrWrong === "first" ? 5 : selectedRightOrWrong === "second" ? 3 : null,
             rC: selectedCorrectPercent,
             timeTaken: answerSubmitTimeSend,
             type: type
@@ -187,7 +187,7 @@ const MyLeaderBoard2 = ({ navigation, route }) => {
             q_time: questionData?.t,
             schedule: questionData?.schedule, // Changed the key to avoid duplication
             rawPoints: rowPointsValue,
-            rM: selectedRightOrWrong === "first" ? 5.5 : selectedRightOrWrong === "second" ? 3.5 : null,
+            rM: selectedRightOrWrong === "first" ? 5 : selectedRightOrWrong === "second" ? 3 : null,
             rC: selectedCorrectPercent,
             timeTaken: answerSubmitTimeSend,
             type: type
@@ -570,7 +570,7 @@ const MyLeaderBoard2 = ({ navigation, route }) => {
                                         color: "#6A5AE0"
                                     }}
                                 >
-                                    {selectedRightOrWrong === "first" ? 5.5 : selectedRightOrWrong === "second" ? "3.5" : null}
+                                    {selectedRightOrWrong === "first" ? 5 : selectedRightOrWrong === "second" ? "3" : null}
                                 </Text>
                             </View>
 
@@ -642,14 +642,14 @@ const MyLeaderBoard2 = ({ navigation, route }) => {
                                 >
                                     {
                                         selectedRightOrWrong === "first" ? (
-                                            (5.5 + selectedCorrectPercent) > 9 ?
-                                                ((5.5 + selectedCorrectPercent) % 10) + Math.floor((5.5 + selectedCorrectPercent) / 10) :
-                                                (5.5 + selectedCorrectPercent)
+                                            (5 + selectedCorrectPercent) > 9 ?
+                                                ((5 + selectedCorrectPercent) % 10) + Math.floor((5 + selectedCorrectPercent) / 10) :
+                                                (5 + selectedCorrectPercent)
                                         ) :
                                             selectedRightOrWrong === "second" ? (
-                                                (3.5 + selectedCorrectPercent) > 9 ?
-                                                    ((3.5 + selectedCorrectPercent) % 10) + Math.floor((3.5 + selectedCorrectPercent) / 10) :
-                                                    (3.5 + selectedCorrectPercent)
+                                                (3 + selectedCorrectPercent) > 9 ?
+                                                    ((3 + selectedCorrectPercent) % 10) + Math.floor((3 + selectedCorrectPercent) / 10) :
+                                                    (3 + selectedCorrectPercent)
                                             ) :
                                                 0
                                     }
@@ -720,14 +720,14 @@ const MyLeaderBoard2 = ({ navigation, route }) => {
                                     isQuestionSave ?
                                         rowPointsValue :
                                         selectedRightOrWrong === "first" ? (
-                                            (5.5 + selectedCorrectPercent) > 9 ?
-                                                ((5.5 + selectedCorrectPercent) % 10) + Math.floor((5.5 + selectedCorrectPercent) / 10) :
-                                                (5.5 + selectedCorrectPercent)
+                                            (5 + selectedCorrectPercent) > 9 ?
+                                                ((5 + selectedCorrectPercent) % 10) + Math.floor((5 + selectedCorrectPercent) / 10) :
+                                                (5 + selectedCorrectPercent)
                                         ) :
                                             selectedRightOrWrong === "second" ? (
-                                                (3.5 + selectedCorrectPercent) > 9 ?
-                                                    ((3.5 + selectedCorrectPercent) % 10) + Math.floor((3.5 + selectedCorrectPercent) / 10) :
-                                                    (3.5 + selectedCorrectPercent)
+                                                (3 + selectedCorrectPercent) > 9 ?
+                                                    ((3 + selectedCorrectPercent) % 10) + Math.floor((3 + selectedCorrectPercent) / 10) :
+                                                    (3 + selectedCorrectPercent)
                                             ) :
                                                 0
                                 }
@@ -1224,7 +1224,7 @@ const MyLeaderBoard2 = ({ navigation, route }) => {
                                         color="#0085FF"
                                         uncheckedColor="#B9C3CC"
                                         value="5"
-                                        status={winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.rM == 5.5 ? "checked" : "unchecked"}
+                                        status={winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.rM == 5 ? "checked" : "unchecked"}
                                     />
                                 </View>
 
@@ -1258,7 +1258,7 @@ const MyLeaderBoard2 = ({ navigation, route }) => {
                                         color="#0085FF"
                                         uncheckedColor="#B9C3CC"
                                         value="second"
-                                        status={winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.rM === 3.5 ? "checked" : "unchecked"}
+                                        status={winnersListPageAllDataOfAUserForParticularExamData?.UserQuestion?.rM === 3 ? "checked" : "unchecked"}
                                     />
                                 </View>
 

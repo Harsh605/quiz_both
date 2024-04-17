@@ -31,6 +31,7 @@ const Profile = ({ navigation }) => {
     const [pincode, setPincode] = useState(myProfileData?.user[0]?.pincode)
     const [kycStatus, setKycStatus] = useState(myProfileData?.user[0]?.kyc || 0)
     const [profilePic, setProfilePic] = useState(myProfileData?.user[0]?.avatar);
+    const [ isImageChanged,setIsImageChanged]= useState(false)
     const [buttonLoading, setButtonLoading] = useState(true)
 
 
@@ -59,6 +60,7 @@ const Profile = ({ navigation }) => {
         if (!result.cancelled) {
             console.log(result.assets[0].uri);
             setProfilePic(result.assets[0].uri);
+            setIsImageChanged(true)
         }
     };
     const updateProfileFunc = () => {
@@ -68,16 +70,20 @@ const Profile = ({ navigation }) => {
         formData.append('city', city);
         formData.append('state', state);
         formData.append('pincode', pincode);
-        formData.append("avatar", {
-            uri: profilePic,
-            type: "image/jpeg",
-            name: "avatar.jpg",
-        });
+        if(isImageChanged){
+            formData.append("avatar", {
+                uri: profilePic,
+                type: "image/jpeg",
+                name: "avatar.jpg",
+            });
+        }
+       
 
         dispatch(updateProfile({ formData })).then(() => {
             if (isProfileUpdate) {
                 alert("Profile Updated")
                 dispatch(myProfile())
+                setIsImageChanged(false)
             }
         });
     }

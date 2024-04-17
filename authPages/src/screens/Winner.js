@@ -48,7 +48,7 @@ const Winner = ({ navigation }) => {
     return () => clearInterval(intervalId);
   }, [dispatch, searchName])
 
-  // console.log("winnerPageAllExamsData",winnerPageAllExamsData)
+  console.log("winnerPageAllExamsData",winnerPageAllExamsData)
   return (
     <>
       <View>
@@ -268,7 +268,7 @@ const Winner = ({ navigation }) => {
                             fontSize: 14,
                           }}
                         >
-                          Joined : {res?.noOfParticipation}
+                          Joined : {res?.joinedMember}
                         </Text>
                       </View>
 

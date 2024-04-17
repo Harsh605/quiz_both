@@ -185,7 +185,7 @@ const Instruction = ({ route, navigation }) => {
                         >
                             <Text style={{ marginRight: 5 }}>👉</Text>
                             <Text>
-                                प्रत्येक Question पर maximum 9.5 point बनाने हैं जो कि Answer के option A/B/C/D, सही/गलत, currect % और Time के point से मिलकर बनते हैं।
+                                प्रत्येक Question पर maximum 9 point बनाने हैं जो कि Answer के option A/B/C/D, सही/गलत, currect % और Time के point से मिलकर बनते हैं।
 
                             </Text>
                         </View>
@@ -200,7 +200,7 @@ const Instruction = ({ route, navigation }) => {
                         >
                             <Text style={{ marginRight: 5 }}>👉</Text>
                             <Text>
-                                सही option select करने पर 5.5 point और गलत option select करने पर 3.5 point मिलते हैं।
+                                सही option select करने पर 5 point और गलत option select करने पर 3 point मिलते हैं।
                             </Text>
                         </View>
 
@@ -374,7 +374,7 @@ const Instruction = ({ route, navigation }) => {
                         >
                             <Text style={{ marginRight: 5 }}>👉</Text>
                             <Text style={{ marginRight: 10 }}>
-                                Maximum 9.5 points are to be made on each question which
+                                Maximum 9 points are to be made on each question which
                                 consists of answer options A/B/C/D, right/wrong, correct % and
                                 time points.
                             </Text>
@@ -390,7 +390,7 @@ const Instruction = ({ route, navigation }) => {
                         >
                             <Text style={{ marginRight: 5 }}>👉</Text>
                             <Text style={{ marginRight: 10 }}>
-                                You get 5.5 points for selecting the correct option and 3.3
+                                You get 5 points for selecting the correct option and 3.3
                                 points for selecting the wrong option.
                             </Text>
                         </View>

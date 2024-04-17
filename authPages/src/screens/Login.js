@@ -60,9 +60,9 @@ const Login = ({ navigation }) => {
                                 visibilityTime: 2000,
                                 autoHide: true,
                             });
+                            await AsyncStorage.setItem('token', result.data.user.jwt)
                             navigation.navigate('Home')
                             console.log(result.data.user.jwt, "tokentoken")
-                            await AsyncStorage.setItem('token', result.data.user.jwt)
 
                         }
 
